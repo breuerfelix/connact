@@ -26,16 +26,18 @@ const SALT_ROUNDS = 14 // takes ~1 second to hash
 const client = new MongoClient(MONGO_URL, { useNewUrlParser: true })
 let auth, users
 
+const loginDelayMinutes = 5
 const loginLimiter = rateLimit({
-	windowMs: 5 * 60 * 1000, // 5 minutes
+	windowMs: loginDelayMinutes * 60 * 1000,
 	max: 5,
-	message: 'Login limit reached for this IP. Try again in 10 minutes.'
+	message: `Login limit reached for this IP. Try again in ${loginDelayMinutes} minutes.`
 })
 
+const signupDelayMinutes = 5
 const signupLimiter = rateLimit({
-	windowMs: 5 * 60 * 1000, // 5 minutes
+	windowMs: signupDelayMinutes * 60 * 1000,
 	max: 3,
-	message: 'Sigup limit reached for this IP. Try again in 10 minutes.'
+	message: `Signup limit reached for this IP. Try again in ${signupDelayMinutes} minutes.`
 })
 
 app.post('/login', loginLimiter, async (req, res) => {

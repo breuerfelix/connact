@@ -6,6 +6,9 @@ on:
 
 jobs:
   images:
+    strategy:
+      matrix:
+        image: [auth, users, radicale]
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -21,16 +24,9 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: auth
+      - name: ${{ matrix.image }}
         uses: docker/build-push-action@v3
         with:
-          context: auth
+          context: ${{ matrix.image }}
           push: true
-          tags: ghcr.io/breuerfelix/connact/auth:latest
-
-      - name: users
-        uses: docker/build-push-action@v3
-        with:
-          context: users
-          push: true
-          tags: ghcr.io/breuerfelix/connact/users:latest
+          tags: ghcr.io/${{ github.repository }}/${{ matrix.image }}:latest
