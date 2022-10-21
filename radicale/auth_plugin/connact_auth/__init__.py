@@ -35,7 +35,7 @@ class Auth(BaseAuth):
 
 
     def _login(self, login, password):
-        logger.info("Login attempt by %r with password %r", login, password)
+        logger.info("Login attempt by %r", login)
         if not login or not password:
             logger.info("username or password is empty")
             return ""
