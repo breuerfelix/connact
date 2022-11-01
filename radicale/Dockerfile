@@ -1,8 +1,10 @@
-FROM python:3-alpine
+FROM python:3
 WORKDIR /radicale
 
 # bcrypt dependencies
-RUN apk add --update musl-dev gcc cargo
+#RUN apk add --update musl-dev gcc cargo
+RUN apt-get update
+RUN apt-get install -y build-essential cargo
 
 COPY auth_plugin auth_plugin
 RUN python3 -m pip install ./auth_plugin
