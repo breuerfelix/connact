@@ -65,9 +65,7 @@ function toVCF(user) {
     )
   }
 
-  const c = new VCARD(props).repr()
-  console.log(c)
-  return c
+  return new VCARD(props).repr()
 }
 
 export {
