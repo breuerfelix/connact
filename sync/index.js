@@ -3,7 +3,7 @@ import surreal from 'surrealdb.js'
 import { rm, readdir, mkdir, writeFile } from 'node:fs/promises'
 import { toVCF } from './card.js'
 
-const FOLDER = "./collection"
+const FOLDER = "./collections/collection-root"
 
 dotenv.config()
 
