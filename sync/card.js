@@ -9,7 +9,6 @@ import {
   BdayProperty,
   DateTimeType,
   TelProperty,
-  URIType,
 } from "vcard4"
 
 // not implemented:
@@ -61,7 +60,7 @@ function toVCF(user) {
   // TODO
   if (user.cellPhoneNumber) {
     props.push(
-      new TelProperty([], new URIType(`tel:${user.cellPhoneNumber}`))
+      new TelProperty([], new TextType(user.cellPhoneNumber))
     )
   }
 
