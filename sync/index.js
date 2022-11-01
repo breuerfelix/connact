@@ -45,8 +45,10 @@ async function clean() {
 }
 
 async function main() {
+  console.log("cleaning...")
   await clean()
 
+  console.log("creating...")
   const db = new surreal(dbURL)
   await db.signin({ user, pass })
   await db.use(namespace, database)
@@ -72,6 +74,7 @@ async function main() {
     }
   }
 
+  console.log("finished")
   process.exit(0)
 }
 
