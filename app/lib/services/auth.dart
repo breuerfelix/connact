@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,13 +6,6 @@ import 'package:http/http.dart' as http;
 
 // POST /signup => registers new user
 // POST /login => logs in user
-
-class User {
-  String username;
-  String displayName;
-
-  User({required this.username, required this.displayName});
-}
 
 const tokenKey = "connactJwtToken";
 
@@ -24,12 +16,16 @@ class AuthService extends ChangeNotifier {
   bool? _loggedIn;
   Future<bool> get loggedIn async {
     if (_loggedIn == null) {
-      String? jwtToken = await _storage.read(key: tokenKey);
+      String? jwtToken = await token;
       // TODO: check if jwt is expired?
       _loggedIn = jwtToken != null;
     }
 
     return _loggedIn!;
+  }
+
+  Future<String?> get token async {
+    return await _storage.read(key: tokenKey);
   }
 
   AuthService({this.baseUrl = "https://auth.connact.fbr.ai"});
