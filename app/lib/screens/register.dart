@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/auth.dart';
 import '../util/string_validations.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -57,7 +59,7 @@ class RegisterPage extends StatelessWidget {
         if (_formKey.currentState!.validate()) {
           try {
             await Provider.of<AuthService>(context, listen: false)
-                .login(username.text, password.text);
+                .signUp(username.text, password.text, email.text);
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: $e")),
@@ -80,7 +82,7 @@ class RegisterPage extends StatelessWidget {
         ));
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
+      appBar: AppBar(title: const Text("Register")),
       body: Center(
           child: Padding(
         padding: const EdgeInsets.all(8.0),

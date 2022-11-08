@@ -1,3 +1,4 @@
+import 'package:app/screens/register.dart';
 import 'package:app/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,7 @@ class LoginPage extends StatelessWidget {
       ),
     ];
 
-    Widget button = ElevatedButton(
+    Widget submitButton = ElevatedButton(
       onPressed: () async {
         // Validate returns true if the form is valid, or false otherwise.
         if (_formKey.currentState!.validate()) {
@@ -64,8 +65,16 @@ class LoginPage extends StatelessWidget {
           children: [
             ...formFields,
             Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: button),
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: submitButton,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: ElevatedButton(
+                  child: const Text('Register instead'),
+                  onPressed: () =>
+                      Navigator.popAndPushNamed(context, RegisterPage.route)),
+            ),
           ],
         ));
 
