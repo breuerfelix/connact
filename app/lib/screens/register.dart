@@ -5,6 +5,7 @@ import '../util/string_validations.dart';
 
 class RegisterPage extends StatelessWidget {
   static String route = "/register";
+  final _isLoading = ValueNotifier<bool>(false);
 
   final _formKey = GlobalKey<FormState>();
   final username = TextEditingController();
@@ -57,6 +58,7 @@ class RegisterPage extends StatelessWidget {
       onPressed: () async {
         // Validate returns true if the form is valid, or false otherwise.
         if (_formKey.currentState!.validate()) {
+          _isLoading.value = true;
           try {
             await Provider.of<AuthService>(context, listen: false)
                 .signUp(username.text, password.text, email.text);
@@ -65,6 +67,7 @@ class RegisterPage extends StatelessWidget {
               SnackBar(content: Text("Error: $e")),
             );
           }
+          _isLoading.value = false;
         }
       },
       child: const Text('Submit'),
@@ -84,10 +87,15 @@ class RegisterPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Register")),
       body: Center(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: form,
-      )),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ValueListenableBuilder(
+            valueListenable: _isLoading,
+            builder: (context, loading, _) =>
+                loading ? const CircularProgressIndicator() : form,
+          ),
+        ),
+      ),
     );
   }
 }
