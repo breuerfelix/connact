@@ -20,6 +20,7 @@ class SplashScreen extends StatelessWidget {
               return const CircularProgressIndicator();
             }
 
+            // TODO: replace with proper routing instead of this
             if (snapshot.data!) {
               return const ProfilePage();
             }

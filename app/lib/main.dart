@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
           ContactsPage.route: (context) => const ContactsPage(),
           LoginPage.route: (context) => LoginPage(),
           ProfilePage.route: (context) => const ProfilePage(),
-          RegisterPage.route: (context) => const RegisterPage(),
+          RegisterPage.route: (context) => RegisterPage(),
         },
       ),
     );
