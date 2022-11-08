@@ -1,5 +1,6 @@
 import 'package:app/screens/login.dart';
 import 'package:app/screens/profile.dart';
+import 'package:app/services/users.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +23,10 @@ class SplashScreen extends StatelessWidget {
 
             // TODO: replace with proper routing instead of this
             if (snapshot.data!) {
-              return const ProfilePage();
+              return Provider<UsersService>(
+                create: (context) => UsersService(authService: value),
+                child: const ProfilePage(),
+              );
             }
             return LoginPage();
           });
