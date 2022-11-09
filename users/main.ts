@@ -1,4 +1,4 @@
-import { Application, Router, Surreal, verify } from "./deps.ts";
+import { Application, oakCors, Router, Surreal, verify } from "./deps.ts";
 
 const getEnv = Deno.env.get;
 const getEnvOrDie = (env: string): string => {
@@ -27,6 +27,7 @@ await db.signin({ user, pass });
 await db.use(namespace, database);
 
 const app = new Application();
+app.use(oakCors({ origin: "*" }));
 const router = new Router();
 
 function res(ctx: any, code: number, body: any) {
