@@ -14,19 +14,20 @@ import 'auth.dart';
 
 class User {
   String username;
-  String email;
+  String fullname;
 
-  User({required this.username, required this.email});
+  User({required this.username, required this.fullname});
 
   User.fromJson(Map<String, dynamic> json)
       : username = json["username"],
-        email = json["email"];
+        fullname = json["fullname"];
 }
 
-class UsersService {
+class UsersService extends ChangeNotifier {
   final String baseUrl;
   // TODO: decouple by just taking the authToken in the constructor
   final AuthService authService;
+  User? _currentUser;
   String? _token;
 
   UsersService({
@@ -35,13 +36,56 @@ class UsersService {
   });
 
   Future<User> get currentUser async {
+    if (_currentUser != null) {
+      return _currentUser!;
+    }
+
     http.Response response = await _sendRequest('GET', "$baseUrl/user");
+    // TODO: need other status code here
+    if (response.statusCode == 400) {
+      // catch user not found
+      throw NotFoundException();
+    }
+
     Map<String, dynamic> userJson = jsonDecode(response.body);
     return User.fromJson(userJson);
   }
 
-  Future<http.Response> _sendRequest(String method, String url) async {
+  Future<void> create(String fullname) async {
+    http.Response response = await _sendRequest('POST', "$baseUrl/user",
+        body: {"fullname": fullname});
+
+    if (response.statusCode != 200) {
+      throw Exception(response.body);
+    }
+
+    Map<String, dynamic> userJson = jsonDecode(response.body);
+
+    _currentUser = User.fromJson(userJson);
+
+    notifyListeners();
+  }
+
+  Future<void> update(String fullname) async {
+    http.Response response = await _sendRequest('POST', "$baseUrl/user",
+        body: {"fullname": fullname});
+    Map<String, dynamic> userJson = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      throw Exception(response.body);
+    }
+
+    _currentUser = User.fromJson(userJson);
+
+    notifyListeners();
+  }
+
+  Future<http.Response> _sendRequest(String method, String url,
+      {Object? body}) async {
     http.Request req = http.Request(method, Uri.parse(url));
+    if (body != null) {
+      req.body = jsonEncode(body);
+    }
 
     if (_token == null) {
       _token = await authService.token;
@@ -52,5 +96,12 @@ class UsersService {
 
     req.headers["Authorization"] = "Bearer $_token";
     return http.Response.fromStream(await req.send());
+  }
+}
+
+class NotFoundException implements Exception {
+  @override
+  String toString() {
+    return "requested entity not found";
   }
 }

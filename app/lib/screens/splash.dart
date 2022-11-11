@@ -14,9 +14,9 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthService>(builder: (context, value, child) {
+    return Consumer<AuthService>(builder: (context, service, child) {
       return FutureBuilder(
-          future: value.loggedIn,
+          future: service.loggedIn,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const CircularProgressIndicator();
@@ -25,9 +25,9 @@ class SplashScreen extends StatelessWidget {
             // TODO: replace with proper routing instead of this
             // to fix some bugs
             if (snapshot.data!) {
-              return Provider<UsersService>(
-                create: (context) => UsersService(authService: value),
-                child: const ProfilePage(),
+              return ChangeNotifierProvider<UsersService>(
+                create: (context) => UsersService(authService: service),
+                child: ProfilePage(),
               );
             }
             return LoginPage();

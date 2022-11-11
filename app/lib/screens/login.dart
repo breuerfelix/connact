@@ -76,7 +76,7 @@ class LoginPage extends StatelessWidget {
               child: ElevatedButton(
                   child: const Text('Register instead'),
                   onPressed: () =>
-                      Navigator.popAndPushNamed(context, RegisterPage.route)),
+                      Navigator.pushNamed(context, RegisterPage.route)),
             ),
           ],
         ));

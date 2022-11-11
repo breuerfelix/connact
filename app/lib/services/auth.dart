@@ -13,18 +13,16 @@ class AuthService extends ChangeNotifier {
   final String baseUrl;
   final _storage = const FlutterSecureStorage();
 
-  bool? _loggedIn;
   Future<bool> get loggedIn async {
-    if (_loggedIn == null) {
-      String? jwtToken = await token;
-      // TODO: check if jwt is expired?
-      _loggedIn = jwtToken != null;
-    }
-
-    return _loggedIn!;
+    return await token != null;
   }
 
+  String? _token;
   Future<String?> get token async {
+    if (_token != null) {
+      return _token;
+    }
+
     return await _storage.read(key: tokenKey);
   }
 
@@ -34,15 +32,16 @@ class AuthService extends ChangeNotifier {
     http.Response response = await http.post(Uri.parse("$baseUrl/login"),
         body: {"username": username, "password": password});
 
-    _storage.write(key: tokenKey, value: extractToken(response.body));
+    _token = extractToken(response.body);
+    _storage.write(key: tokenKey, value: _token);
 
-    _loggedIn = true;
     notifyListeners();
   }
 
   Future<void> logout() async {
     await _storage.delete(key: tokenKey);
-    _loggedIn = false;
+    _token = null;
+
     notifyListeners();
   }
 
@@ -50,9 +49,9 @@ class AuthService extends ChangeNotifier {
     http.Response response = await http.post(Uri.parse("$baseUrl/signup"),
         body: {"username": username, "password": password, "email": email});
 
-    _storage.write(key: tokenKey, value: extractToken(response.body));
+    _token = extractToken(response.body);
+    _storage.write(key: tokenKey, value: _token);
 
-    _loggedIn = true;
     notifyListeners();
   }
 }
