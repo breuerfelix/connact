@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           SplashScreen.route: (context) => const SplashScreen(),
           ContactsPage.route: (context) => const ContactsPage(),
           LoginPage.route: (context) => LoginPage(),
-          ProfilePage.route: (context) => const ProfilePage(),
+          ProfilePage.route: (context) => ProfilePage(),
           RegisterPage.route: (context) => RegisterPage(),
         },
       ),
