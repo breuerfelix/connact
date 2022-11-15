@@ -30,6 +30,7 @@ class LoginPage extends StatelessWidget {
         },
       ),
       TextFormField(
+        // TODO: use two password fields and validate on that
         decoration: const InputDecoration(hintText: "Password"),
         controller: password,
         obscureText: true,
@@ -52,6 +53,7 @@ class LoginPage extends StatelessWidget {
             await Provider.of<AuthService>(context, listen: false)
                 .login(username.text, password.text);
           } catch (e) {
+            // TODO: sendErrorDialog util function to show this
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: $e")),
             );

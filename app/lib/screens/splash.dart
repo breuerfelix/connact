@@ -21,6 +21,7 @@ class SplashScreen extends StatelessWidget {
             if (!snapshot.hasData) {
               return const CircularProgressIndicator();
             }
+            // TODO: implement splash screen
 
             // TODO: replace with proper routing instead of this
             // to fix some bugs
