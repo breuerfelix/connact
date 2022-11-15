@@ -78,9 +78,9 @@ class UsersService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> update(String fullname) async {
-    http.Response response = await _sendRequest('POST', "$baseUrl/user",
-        body: {"fullname": fullname});
+  Future<void> update(User user) async {
+    http.Response response =
+        await _sendRequest('PUT', "$baseUrl/user", body: user.toJson());
     Map<String, dynamic> userJson = jsonDecode(response.body);
 
     if (response.statusCode != 200) {
