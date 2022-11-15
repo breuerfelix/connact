@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/util/options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -13,14 +14,25 @@ import 'auth.dart';
 // DELETE /user => deletes your own user
 
 class User {
-  String username;
-  String fullname;
+  late final String username;
+  late final String fullname;
+  Map<String, String> dynamicProperties = {};
 
   User({required this.username, required this.fullname});
 
-  User.fromJson(Map<String, dynamic> json)
-      : username = json["username"],
-        fullname = json["fullname"];
+  User.fromJson(Map<String, dynamic> json) {
+    username = json["username"];
+    fullname = json["fullname"];
+    for (String option in Options.map.keys) {
+      if (json[option] is String) {
+        dynamicProperties[option] = json[option];
+      }
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {"username": username, "fullname": fullname, ...dynamicProperties};
+  }
 }
 
 class UsersService extends ChangeNotifier {
