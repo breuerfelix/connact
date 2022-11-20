@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
 import '../services/auth.dart';
+import '../services/users.dart';
 import '../util/string_validations.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -60,8 +62,11 @@ class RegisterPage extends StatelessWidget {
         if (_formKey.currentState!.validate()) {
           _isLoading.value = true;
           try {
-            await Provider.of<AuthService>(context, listen: false)
-                .signUp(username.text, password.text, email.text);
+            final authService =
+                Provider.of<AuthService>(context, listen: false);
+            await authService.signUp(username.text, password.text, email.text);
+            final usersService = UsersService(authService: authService);
+            await usersService.create(userFromJWT((await authService.token)!));
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: $e")),
@@ -98,4 +103,13 @@ class RegisterPage extends StatelessWidget {
       ),
     );
   }
+}
+
+User userFromJWT(String token) {
+  final payload = Jwt.parseJwt(token);
+
+  return User(
+      username: payload["username"],
+      fullname: "",
+      dynamicProperties: {"email": payload["email"]});
 }
