@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:app/screens/profile_edit.dart';
 import 'package:app/services/users.dart';
 import 'package:app/util/options.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +9,9 @@ import 'package:provider/provider.dart';
 
 import 'contact_card.dart';
 
-// TODO: sort options (phone always on top etc.)
 // TODO: make fullname editable
 // TODO: open link on tab
-// TODO: seperate search window accessable via bottom navigation bar
-// TODO: add share floating action button (qr code, nfc, handle)
+// TODO: add option to remove dynamicProperties
 
 class ProfilePage extends StatelessWidget {
   static String route = "/profile";
@@ -47,6 +44,7 @@ class ProfilePage extends StatelessWidget {
                     if (!editing.value && snapshot.hasData) {
                       // TODO: add waiting state indication somewhere
                       // TODO: add error handling
+                      // FIXME: need to create user on initial load instead of update
                       await userService.update(snapshot.data!);
                     }
                   },
@@ -67,14 +65,6 @@ class ProfilePage extends StatelessWidget {
         stream: controller.stream,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            // user not initialized yet on first app load
-            if (snapshot.error is NotFoundException) {
-              editing.value = true;
-              // TODO: initialize user with data from jwt token
-              return _buildUserProfile(
-                  context, User(username: "dummy", fullname: "dummy mc dummy"));
-            }
-
             WidgetsBinding.instance.addPostFrameCallback((_) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Error: ${snapshot.error}")),

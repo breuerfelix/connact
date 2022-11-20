@@ -18,7 +18,10 @@ class User {
   late final String fullname;
   Map<String, String> dynamicProperties = {};
 
-  User({required this.username, required this.fullname});
+  User(
+      {required this.username,
+      required this.fullname,
+      required this.dynamicProperties});
 
   User.fromJson(Map<String, dynamic> json) {
     username = json["username"];
@@ -63,9 +66,9 @@ class UsersService extends ChangeNotifier {
     return User.fromJson(userJson);
   }
 
-  Future<void> create(String fullname) async {
-    http.Response response = await _sendRequest('POST', "$baseUrl/user",
-        body: {"fullname": fullname});
+  Future<void> create(User user) async {
+    http.Response response =
+        await _sendRequest('POST', "$baseUrl/user", body: user.toJson());
 
     if (response.statusCode != 200) {
       throw Exception(response.body);
@@ -81,11 +84,12 @@ class UsersService extends ChangeNotifier {
   Future<void> update(User user) async {
     http.Response response =
         await _sendRequest('PUT', "$baseUrl/user", body: user.toJson());
-    Map<String, dynamic> userJson = jsonDecode(response.body);
 
     if (response.statusCode != 200) {
       throw Exception(response.body);
     }
+
+    Map<String, dynamic> userJson = jsonDecode(response.body);
 
     _currentUser = User.fromJson(userJson);
 
