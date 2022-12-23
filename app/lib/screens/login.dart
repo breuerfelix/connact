@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
 import '../util/string_validations.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatelessWidget {
   static String route = "/login";
@@ -80,8 +81,7 @@ class LoginPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: ElevatedButton(
                   child: const Text('Register instead'),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, RegisterPage.route)),
+                  onPressed: () => context.push(RegisterPage.route)),
             ),
           ],
         ));
