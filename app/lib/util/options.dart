@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import './string_validations.dart';
 
 // TODO: use consistent icons (outlines vs black etc.)
 

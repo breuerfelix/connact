@@ -1,12 +1,10 @@
 import 'package:app/screens/register.dart';
 import 'package:app/services/auth.dart';
-import 'package:app/services/users.dart';
-import 'package:app/util/options.dart';
 import 'package:flutter/material.dart';
-import 'package:jwt_decode/jwt_decode.dart';
-import 'package:provider/provider.dart';
-import '../util/string_validations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../util/string_validations.dart';
 
 class LoginPage extends StatelessWidget {
   static String route = "/login";
