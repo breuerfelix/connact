@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:app/services/users.dart';
 import 'package:app/util/options.dart';
@@ -117,7 +116,7 @@ class ProfilePage extends StatelessWidget {
                   !editing
                       ? Container()
                       : SelfReplacingButton(
-                          icon: Icon(Icons.add),
+                          icon: const Icon(Icons.add),
                           actions: Options.map.keys
                               .where((element) =>
                                   !user.dynamicProperties.containsKey(element))
