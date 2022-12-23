@@ -52,7 +52,7 @@ class LoginPage extends StatelessWidget {
         if (_formKey.currentState!.validate()) {
           _isLoading.value = true;
           try {
-            Provider.of<AuthService>(context, listen: false)
+            await Provider.of<AuthService>(context, listen: false)
                 .login(username.text, password.text);
           } catch (e) {
             // TODO: sendErrorDialog util function to show this
