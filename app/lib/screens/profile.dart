@@ -103,7 +103,6 @@ class ProfilePage extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline4,
                   ),
 
-                  // TODO: updateUser on save
                   ...user.dynamicProperties.entries.map((prop) => ContactCard(
                         icon: Options.map[prop.key]!.icon,
                         identity: Options.map[prop.key]!
