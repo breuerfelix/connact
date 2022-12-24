@@ -96,6 +96,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// TODO: try this design: https://www.uplabs.com/posts/bottom-navigation-bar-ui-kit-29531c96-5562-47c5-acec-3b52618e4af3
+// - share as FAB style in the middle
+// - order: settings, search, share, profile, contacts
 BottomNavigationBar _buildBottomNavigationBar(BuildContext context) {
   final pageToIcon = {
     ContactsPage.route: FontAwesomeIcons.addressBook,

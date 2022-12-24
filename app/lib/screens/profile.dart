@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import 'contact_card.dart';
 
 // TODO: make fullname editable
+// TODO: start in edit mode if name is empty (probably first time opening profile)
+// TODO: edit as FAB?
 // TODO: open link on tab
 // TODO: add option to remove dynamicProperties
 
