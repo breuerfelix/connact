@@ -2,6 +2,7 @@ import 'package:app/screens/contacts.dart';
 import 'package:app/screens/login.dart';
 import 'package:app/screens/profile.dart';
 import 'package:app/screens/register.dart';
+import 'package:app/screens/share.dart';
 import 'package:app/services/auth.dart';
 import 'package:app/services/users.dart';
 import 'package:flutter/material.dart';
@@ -71,13 +72,21 @@ class MyApp extends StatelessWidget {
                     path: ProfilePage.route,
                     pageBuilder: (context, state) =>
                         NoTransitionPage(child: ProfilePage())),
+                GoRoute(
+                    path: SharePage.route,
+                    pageBuilder: (context, state) =>
+                        const NoTransitionPage(child: SharePage())),
               ]),
             ]),
       ),
     );
   }
 
-// TODO: use MaterialPage or sth for children instead of nesting scaffolds
+// NOTE: this is now using nested scaffolds which is not supported
+// in every scenario but still there's no real alternative when
+// changing the AppBar and navigating with bottom navigation bar.
+// See https://github.com/flutter/flutter/issues/23106.
+// https://stackoverflow.com/questions/64618050/is-it-correct-to-have-nested-scaffold-in-flutter
   Widget _pageScaffoldBuilder(
       BuildContext context, GoRouterState state, Widget child) {
     return Scaffold(
@@ -90,6 +99,7 @@ class MyApp extends StatelessWidget {
 BottomNavigationBar _buildBottomNavigationBar(BuildContext context) {
   final pageToIcon = {
     ContactsPage.route: FontAwesomeIcons.addressBook,
+    SharePage.route: FontAwesomeIcons.share,
     ProfilePage.route: FontAwesomeIcons.person,
   };
 

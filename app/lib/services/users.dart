@@ -37,6 +37,8 @@ class User {
   }
 }
 
+// TODO: persist stuff to shared prefs to safe networking actions
+
 class UsersService extends ChangeNotifier {
   final String baseUrl;
   // TODO: decouple by just taking the authToken in the constructor
