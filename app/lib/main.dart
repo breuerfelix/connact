@@ -45,6 +45,8 @@ class MyApp extends StatelessWidget {
                   state.subloc == LoginPage.route;
 
               if (!onLoginPage && !await authService.loggedIn) {
+                // would be nice to clear the navigation stack here
+                // see https://github.com/flutter/flutter/issues/114131
                 return LoginPage.route;
               }
 
