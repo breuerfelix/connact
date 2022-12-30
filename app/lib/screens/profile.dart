@@ -31,11 +31,7 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-          title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(),
-          const Text("Profile"),
+        actions: [
           StreamBuilder(
               stream: controller.stream,
               builder: (context, snapshot) {
@@ -61,7 +57,8 @@ class ProfilePage extends StatelessWidget {
                 );
               })
         ],
-      )),
+        title: const Text("Profile"),
+      ),
       body: StreamBuilder(
         stream: controller.stream,
         builder: (context, snapshot) {
