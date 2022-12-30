@@ -2,6 +2,8 @@ import 'package:app/screens/contacts.dart';
 import 'package:app/screens/login.dart';
 import 'package:app/screens/profile.dart';
 import 'package:app/screens/register.dart';
+import 'package:app/screens/search.dart';
+import 'package:app/screens/settings.dart';
 import 'package:app/screens/share.dart';
 import 'package:app/services/auth.dart';
 import 'package:app/services/users.dart';
@@ -63,20 +65,23 @@ class MyApp extends StatelessWidget {
                   path: RegisterPage.route,
                   pageBuilder: (context, state) =>
                       NoTransitionPage(child: RegisterPage())),
-              ShellRoute(builder: _pageScaffoldBuilder, routes: [
-                GoRoute(
-                    path: ContactsPage.route,
-                    pageBuilder: (context, state) =>
-                        const NoTransitionPage(child: ContactsPage())),
-                GoRoute(
-                    path: ProfilePage.route,
-                    pageBuilder: (context, state) =>
-                        NoTransitionPage(child: ProfilePage())),
-                GoRoute(
-                    path: SharePage.route,
-                    pageBuilder: (context, state) =>
-                        const NoTransitionPage(child: SharePage())),
-              ]),
+              ShellRoute(
+                builder: _pageScaffoldBuilder,
+                routes: {
+                  ContactsPage.route: const ContactsPage(),
+                  ProfilePage.route: ProfilePage(),
+                  SharePage.route: const SharePage(),
+                  SettingsPage.route: const SettingsPage(),
+                  SearchPage.route: const SearchPage(),
+                }
+                    .entries
+                    .map((p) => GoRoute(
+                          path: p.key,
+                          pageBuilder: (context, state) =>
+                              NoTransitionPage(child: p.value),
+                        ))
+                    .toList(),
+              )
             ]),
       ),
     );
@@ -87,14 +92,17 @@ class MyApp extends StatelessWidget {
 // changing the AppBar and navigating with bottom navigation bar.
 // See https://github.com/flutter/flutter/issues/23106.
 // https://stackoverflow.com/questions/64618050/is-it-correct-to-have-nested-scaffold-in-flutter
+//
 // The bottom app bar is trying to emulate this layout:
-// // TODO: try this design: https://www.uplabs.com/posts/bottom-navigation-bar-ui-kit-29531c96-5562-47c5-acec-3b52618e4af3.
+// https://www.uplabs.com/posts/bottom-navigation-bar-ui-kit-29531c96-5562-47c5-acec-3b52618e4af3.
   Widget _pageScaffoldBuilder(
       BuildContext context, GoRouterState state, Widget child) {
     Map<String, IconData> pageToIcon = {
-      ContactsPage.route: FontAwesomeIcons.addressBook,
-      SharePage.route: FontAwesomeIcons.at,
+      SettingsPage.route: FontAwesomeIcons.sliders,
+      SearchPage.route: FontAwesomeIcons.magnifyingGlass,
+      SharePage.route: FontAwesomeIcons.handshakeSimple,
       ProfilePage.route: FontAwesomeIcons.person,
+      ContactsPage.route: FontAwesomeIcons.addressBook,
     };
     assert(pageToIcon.length.isOdd);
 
@@ -121,7 +129,7 @@ class MyApp extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.go(middlePageKey),
         tooltip: middlePageKey,
-        child: Icon(pageToIcon[middlePageKey]),
+        child: FaIcon(pageToIcon[middlePageKey]),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
@@ -139,7 +147,7 @@ Widget _bottomButton(BuildContext context, String page, IconData icon) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon), // <-- Icon
+            FaIcon(icon), // <-- Icon
             Text(
               page.split('/').last.capitalize(),
               style: Theme.of(context).textTheme.caption,
