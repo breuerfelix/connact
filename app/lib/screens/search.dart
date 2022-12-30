@@ -54,8 +54,20 @@ class SearchPage extends StatelessWidget {
         builder: (_, value, __) {
           if (value.text == "") {
             return Center(
-              child: Image.network(
-                  "https://media.tenor.com/lx2WSGRk8bcAAAAC/pulp-fiction-john-travolta.gif"),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const FaIcon(
+                    FontAwesomeIcons.binoculars,
+                    size: 60,
+                  ),
+                  Text(
+                    "Start looking for your friends.",
+                    style: Theme.of(context).textTheme.headline5,
+                  )
+                ],
+              ),
             );
           }
 
@@ -70,6 +82,25 @@ class SearchPage extends StatelessWidget {
                     snapshot.connectionState == ConnectionState.waiting;
                 // TODO: error handling
 
+                if (!loading && snapshot.data!.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.network(
+                            "https://media.tenor.com/lx2WSGRk8bcAAAAC/pulp-fiction-john-travolta.gif"),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          "Where is everyone?",
+                          style: Theme.of(context).textTheme.headline5,
+                        )
+                      ],
+                    ),
+                  );
+                }
+
                 final results = snapshot.data;
                 return Column(
                   children: [
@@ -83,17 +114,43 @@ class SearchPage extends StatelessWidget {
                           ),
                     Expanded(
                       child: ListView(
-                        children: (results ?? [])
-                            .map((e) => Card(
-                                  child: Text(e),
-                                ))
-                            .toList(),
-                      ),
+                          children: (results ?? [])
+                              .map((username) => _userCard(context, username))
+                              .toList()),
                     )
                   ],
                 );
               });
         },
+      ),
+    );
+  }
+
+  Widget _userCard(BuildContext context, String username) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: Colors.transparent,
+            backgroundImage: NetworkImage(
+                "https://avatars.dicebear.com/api/personas/$username.png"),
+          ),
+          title: Text(
+            username,
+            style: Theme.of(context).textTheme.headline5,
+          ),
+          trailing: IconButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("Added user $username"),
+              ));
+              // TODO: actually add the user
+              // TODO: turn the add icon to a tick on click to indicate success
+            },
+            icon: const FaIcon(FontAwesomeIcons.plus),
+          ),
+        ),
       ),
     );
   }
