@@ -43,28 +43,9 @@ class LoginPage extends StatelessWidget {
           }
           return null;
         },
+        onFieldSubmitted: (_) => _submit(context),
       ),
     ];
-
-    Widget submitButton = ElevatedButton(
-      onPressed: () async {
-        // Validate returns true if the form is valid, or false otherwise.
-        if (_formKey.currentState!.validate()) {
-          _isLoading.value = true;
-          try {
-            await Provider.of<AuthService>(context, listen: false)
-                .login(username.text, password.text);
-          } catch (e) {
-            // TODO: sendErrorDialog util function to show this
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Error: $e")),
-            );
-          }
-          _isLoading.value = false;
-        }
-      },
-      child: const Text('Submit'),
-    );
 
     Widget form = Form(
         key: _formKey,
@@ -73,7 +54,10 @@ class LoginPage extends StatelessWidget {
             ...formFields,
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: submitButton,
+              child: ElevatedButton(
+                onPressed: () => _submit(context),
+                child: const Text('Submit'),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -97,5 +81,22 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _submit(BuildContext context) async {
+    // Validate returns true if the form is valid, or false otherwise.
+    if (_formKey.currentState!.validate()) {
+      _isLoading.value = true;
+      try {
+        await Provider.of<AuthService>(context, listen: false)
+            .login(username.text, password.text);
+      } catch (e) {
+        // TODO: sendErrorDialog util function to show this
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: $e")),
+        );
+      }
+      _isLoading.value = false;
+    }
   }
 }
