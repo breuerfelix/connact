@@ -49,7 +49,70 @@ class SearchPage extends StatelessWidget {
           ),
         ),
       ),
-      body: const Center(child: Text("search")),
+      body: ValueListenableBuilder(
+        valueListenable: _controller,
+        builder: (_, value, __) {
+          if (value.text == "") {
+            return Center(
+              child: Image.network(
+                  "https://media.tenor.com/lx2WSGRk8bcAAAAC/pulp-fiction-john-travolta.gif"),
+            );
+          }
+
+          return FutureBuilder(
+              future: search(value.text),
+              builder: (context, snapshot) {
+                // print("connection state");
+                // print(snapshot.connectionState == ConnectionState.waiting);
+                // print("data");
+                // print(snapshot.hasData);
+                final loading = !snapshot.hasData ||
+                    snapshot.connectionState == ConnectionState.waiting;
+                // TODO: error handling
+
+                final results = snapshot.data;
+                return Column(
+                  children: [
+                    loading
+                        ? const LinearProgressIndicator(
+                            backgroundColor: Colors.transparent,
+                            minHeight: 5,
+                          )
+                        : const SizedBox(
+                            height: 5,
+                          ),
+                    Expanded(
+                      child: ListView(
+                        children: (results ?? [])
+                            .map((e) => Card(
+                                  child: Text(e),
+                                ))
+                            .toList(),
+                      ),
+                    )
+                  ],
+                );
+              });
+        },
+      ),
     );
   }
 }
+
+// TODO: fetch from user service
+Future<List<String>> search(String filter) async {
+  return Future.delayed(
+    const Duration(milliseconds: 500),
+    () => TEST_VALUES.where((element) => element.contains(filter)).toList(),
+  );
+}
+
+final TEST_VALUES = [
+  "test123",
+  "tes345",
+  "awdawd",
+  "löijafe",
+  "löjiawd",
+  "vgaw",
+  "ahfuawh"
+];
