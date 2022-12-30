@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
                   ProfilePage.route: ProfilePage(),
                   SharePage.route: const SharePage(),
                   SettingsPage.route: const SettingsPage(),
-                  SearchPage.route: const SearchPage(),
+                  SearchPage.route: SearchPage(),
                 }
                     .entries
                     .map((p) => GoRoute(
