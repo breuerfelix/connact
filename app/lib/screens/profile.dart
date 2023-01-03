@@ -164,7 +164,15 @@ class ProfilePage extends StatelessWidget {
         title: TextFormField(
           initialValue: text,
           onSaved: (value) => onSave(value!),
-          validator: validator,
+          validator: (value) {
+            if (value == "") {
+              return "Field is required";
+            }
+            if (validator != null) {
+              return validator(value);
+            }
+            return null;
+          },
           enabled: inEditMode,
           style: Theme.of(context).textTheme.headline5,
           decoration: const InputDecoration(disabledBorder: InputBorder.none),
