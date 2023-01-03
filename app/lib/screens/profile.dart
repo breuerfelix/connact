@@ -36,95 +36,110 @@ class ProfilePage extends StatelessWidget {
               valueListenable: editing,
               builder: (context, inEditMode, _) {
                 return Scaffold(
-                    appBar: AppBar(
-                      actions: [
-                        IconButton(
-                            onPressed: () async {
-                              if (inEditMode) {
-                                // TODO: add waiting state indication somewhere
-                                // TODO: add error handling
-                                if (!_formKey.currentState!.validate()) {
-                                  return;
-                                }
-
-                                _formKey.currentState!.save();
-                                await userService.update(snapshot.data!);
+                  appBar: AppBar(
+                    actions: [
+                      IconButton(
+                          onPressed: () async {
+                            if (inEditMode) {
+                              // TODO: add waiting state indication somewhere
+                              // TODO: add error handling
+                              if (!_formKey.currentState!.validate()) {
+                                return;
                               }
-                              editing.value = !editing.value;
-                            },
-                            icon: FaIcon(
-                              inEditMode
-                                  ? FontAwesomeIcons.floppyDisk
-                                  : FontAwesomeIcons.penToSquare,
-                            ))
-                      ],
-                      title: const Text("Profile"),
+
+                              _formKey.currentState!.save();
+                              await userService.update(snapshot.data!);
+                            }
+                            editing.value = !editing.value;
+                          },
+                          icon: FaIcon(
+                            inEditMode
+                                ? FontAwesomeIcons.floppyDisk
+                                : FontAwesomeIcons.penToSquare,
+                          ))
+                    ],
+                    title: const Text("Profile"),
+                  ),
+                  body: Center(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text("Welcome back @${user.username}!",
+                              style: Theme.of(context).textTheme.headline4),
+                          _buildUserProfile(context, user, inEditMode),
+                        ],
+                      ),
                     ),
-                    body: _buildUserProfile(context, user, inEditMode));
+                  ),
+                );
               });
         });
   }
 
   Widget _buildUserProfile(BuildContext context, User user, bool inEditMode) {
-    return Center(
-        child: Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text("Welcome back @${user.username}!",
-              style: Theme.of(context).textTheme.headline4),
-          CircleAvatar(
-            maxRadius: 100,
-            backgroundColor: Colors.transparent,
-            backgroundImage: NetworkImage(
-                "https://avatars.dicebear.com/api/personas/${user.username}.png"),
-          ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: TextFormField(
-              initialValue: user.fullname,
-              onSaved: (value) => user.fullname = value!,
-              validator: (value) =>
-                  value != "" ? null : "Full Name is required",
-              enabled: inEditMode,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline4!
-                  .copyWith(color: Colors.black),
-              textAlign: TextAlign.center,
-              decoration: const InputDecoration(
-                  hintText: "<Your full name>",
-                  disabledBorder: InputBorder.none),
-            ),
-          ),
-          ...user.dynamicProperties.entries.map((prop) => _buildInfoCard(
-                context,
-                inEditMode,
-                icon: Options.map[prop.key]!.icon,
-                text: prop.value,
-                onSave: (value) {
-                  user.dynamicProperties[prop.key] = value;
-                },
-                validator: Options.map[prop.key]!.validator,
-              )),
-          !inEditMode
-              ? const SizedBox.shrink()
-              : SelfReplacingButton(
-                  icon: const Icon(Icons.add),
-                  actions: Options.map.keys
-                      .where((element) =>
-                          !user.dynamicProperties.containsKey(element))
-                      .map((e) => Action(
-                          onPressed: () {
-                            user.dynamicProperties[e] = "";
-                          },
-                          icon: Options.map[e]!.icon))
-                      .toList(),
-                )
-        ],
-      ),
-    ));
+    final changeListener =
+        ChangeNotifier(); // TODO: there's probably a cleaner approach
+
+    return AnimatedBuilder(
+        animation: changeListener,
+        builder: (context, _) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                maxRadius: 100,
+                backgroundColor: Colors.transparent,
+                backgroundImage: NetworkImage(
+                    "https://avatars.dicebear.com/api/personas/${user.username}.png"),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: TextFormField(
+                  initialValue: user.fullname,
+                  onSaved: (value) => user.fullname = value!,
+                  validator: (value) =>
+                      value != "" ? null : "Full Name is required",
+                  enabled: inEditMode,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline4!
+                      .copyWith(color: Colors.black),
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                      hintText: "<Your full name>",
+                      disabledBorder: InputBorder.none),
+                ),
+              ),
+              ...user.dynamicProperties.entries.map((prop) => _buildInfoCard(
+                    context,
+                    inEditMode,
+                    icon: Options.map[prop.key]!.icon,
+                    text: prop.value,
+                    onSave: (value) {
+                      user.dynamicProperties[prop.key] = value;
+                    },
+                    validator: Options.map[prop.key]!.validator,
+                  )),
+              !inEditMode
+                  ? const SizedBox.shrink()
+                  : SelfReplacingButton(
+                      icon: const Icon(Icons.add),
+                      actions: Options.map.keys
+                          .where((element) =>
+                              !user.dynamicProperties.containsKey(element))
+                          .map((e) => Action(
+                              onPressed: () {
+                                user.dynamicProperties[e] = "";
+                                changeListener.notifyListeners();
+                              },
+                              icon: Options.map[e]!.icon))
+                          .toList(),
+                    )
+            ],
+          );
+        });
   }
 
   Widget _buildInfoCard(
