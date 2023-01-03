@@ -16,15 +16,21 @@ class User {
   late final String username;
   String? fullname;
   Map<String, String> dynamicProperties = {};
+  Set<String>? contacts;
 
-  User(
-      {required this.username,
-      required this.fullname,
-      required this.dynamicProperties});
+  User({
+    required this.username,
+    required this.fullname,
+    required this.dynamicProperties,
+    this.contacts,
+  }) {
+    contacts = contacts ?? {};
+  }
 
   User.fromJson(Map<String, dynamic> json) {
     username = json["username"];
     fullname = json["fullname"];
+    contacts = Set<String>.from(json["contacts"] ?? []);
     for (String option in Options.map.keys) {
       if (json[option] is String) {
         dynamicProperties[option] = json[option];
@@ -36,6 +42,7 @@ class User {
     return {
       "username": username,
       "fullname": fullname,
+      "contacts": [...?contacts],
       ...Options.map.map((key, value) => MapEntry(
           key, null)), // set all properties to null to remove them if not set
       ...dynamicProperties
