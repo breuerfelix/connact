@@ -1,5 +1,7 @@
+import 'package:app/services/users.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class SearchPage extends StatelessWidget {
   static String route = "/search";
@@ -72,7 +74,10 @@ class SearchPage extends StatelessWidget {
           }
 
           return FutureBuilder(
-              future: search(value.text),
+              future: Future.wait([
+                search(value.text),
+                Provider.of<UsersService>(context, listen: false).currentUser
+              ]),
               builder: (context, snapshot) {
                 // print("connection state");
                 // print(snapshot.connectionState == ConnectionState.waiting);
@@ -82,14 +87,16 @@ class SearchPage extends StatelessWidget {
                     snapshot.connectionState == ConnectionState.waiting;
                 // TODO: error handling
 
-                if (!loading && snapshot.data!.isEmpty) {
+                final searchResults = snapshot.data?[0] as List<String>?;
+                final currentUser = snapshot.data?[1] as User?;
+
+                if (!loading && searchResults!.isEmpty) {
                   return Center(
                     child: Image.network(
                         "https://media.tenor.com/lx2WSGRk8bcAAAAC/pulp-fiction-john-travolta.gif"),
                   );
                 }
 
-                final results = snapshot.data;
                 return Column(
                   children: [
                     loading
@@ -97,13 +104,16 @@ class SearchPage extends StatelessWidget {
                             backgroundColor: Colors.transparent,
                             minHeight: 5,
                           )
-                        : const SizedBox(
+                        :
+                        // to not jump when loading indicator is gone
+                        const SizedBox(
                             height: 5,
                           ),
                     Expanded(
                       child: ListView(
-                          children: (results ?? [])
-                              .map((username) => _userCard(context, username))
+                          children: (searchResults ?? [])
+                              .map((username) =>
+                                  _userCard(context, currentUser!, username))
                               .toList()),
                     )
                   ],
@@ -114,31 +124,40 @@ class SearchPage extends StatelessWidget {
     );
   }
 
-  Widget _userCard(BuildContext context, String username) {
+  Widget _userCard(BuildContext context, User currentUser, String username) {
+    final isAdded = ValueNotifier(
+        currentUser.contacts?.contains("user:$username") ?? false);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Colors.transparent,
-            backgroundImage: NetworkImage(
-                "https://avatars.dicebear.com/api/personas/$username.png"),
-          ),
-          title: Text(
-            username,
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          trailing: IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text("Added user $username"),
-              ));
-              // TODO: actually add the user
-              // TODO: turn the add icon to a tick on click to indicate success
-            },
-            icon: const FaIcon(FontAwesomeIcons.plus),
-          ),
-        ),
+            leading: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              backgroundImage: NetworkImage(
+                  "https://avatars.dicebear.com/api/personas/$username.png"),
+            ),
+            title: Text(
+              username,
+              style: Theme.of(context).textTheme.headline5,
+            ),
+            trailing: ValueListenableBuilder(
+              valueListenable: isAdded,
+              builder: (context, added, _) => IconButton(
+                onPressed: added
+                    ? null
+                    : () async {
+                        currentUser.contacts!.add("user:$username");
+                        await Provider.of<UsersService>(context, listen: false)
+                            .update(currentUser);
+
+                        isAdded.value = true;
+                      },
+                icon: added
+                    ? const FaIcon(FontAwesomeIcons.check)
+                    : const FaIcon(FontAwesomeIcons.plus),
+              ),
+            )),
       ),
     );
   }
