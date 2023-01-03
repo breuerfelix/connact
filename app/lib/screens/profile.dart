@@ -3,9 +3,7 @@ import 'package:app/util/options.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-
-// TODO: open link on tab
-// TODO: add option to remove dynamicProperties
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatelessWidget {
   static String route = "/profile";
@@ -112,20 +110,24 @@ class ProfilePage extends StatelessWidget {
                       disabledBorder: InputBorder.none),
                 ),
               ),
-              ...orderedProperties(user).map((prop) => _buildInfoCard(
-                    context,
-                    inEditMode,
-                    icon: Options.map[prop.key]!.icon,
-                    text: prop.value,
-                    onSave: (value) {
-                      user.dynamicProperties[prop.key] = value;
-                    },
-                    onRemove: () {
-                      user.dynamicProperties.remove(prop.key);
-                      changeListener.notifyListeners();
-                    },
-                    validator: Options.map[prop.key]!.validator,
-                  )),
+              ...orderedProperties(user).map((prop) {
+                final option = Options.map[prop.key]!;
+                return _buildInfoCard(
+                  context,
+                  inEditMode,
+                  icon: option.icon,
+                  text: prop.value,
+                  url: option.urlFormatter(prop.value),
+                  validator: option.validator,
+                  onSave: (value) {
+                    user.dynamicProperties[prop.key] = value;
+                  },
+                  onRemove: () {
+                    user.dynamicProperties.remove(prop.key);
+                    changeListener.notifyListeners();
+                  },
+                );
+              }),
               !inEditMode
                   ? const SizedBox.shrink()
                   : SelfReplacingButton(
@@ -156,44 +158,49 @@ class ProfilePage extends StatelessWidget {
     bool inEditMode, {
     required IconData icon,
     required String text,
+    required String url,
     required void Function(String) onSave,
     required void Function() onRemove,
     String? Function(String?)? validator,
   }) {
     return Card(
-      child: ListTile(
-        leading: CircleAvatar(
-          maxRadius: 40,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Theme.of(context).iconTheme.color,
-          child: FaIcon(
-            icon,
-            size: 35,
+      child: InkWell(
+        onTap: inEditMode ? null : () => launchUrl(Uri.parse(url)),
+        mouseCursor: MouseCursor.defer,
+        child: ListTile(
+          leading: CircleAvatar(
+            maxRadius: 40,
+            backgroundColor: Colors.transparent,
+            foregroundColor: Theme.of(context).iconTheme.color,
+            child: FaIcon(
+              icon,
+              size: 35,
+            ),
           ),
+          title: TextFormField(
+            key: Key(icon.toString()), // to keep the text in the right fields
+            initialValue: text,
+            onSaved: (value) => onSave(value!),
+            validator: (value) {
+              if (value == "") {
+                return "Field is required";
+              }
+              if (validator != null) {
+                return validator(value);
+              }
+              return null;
+            },
+            enabled: inEditMode,
+            style: Theme.of(context).textTheme.headline5,
+            decoration: const InputDecoration(disabledBorder: InputBorder.none),
+          ),
+          trailing: inEditMode
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: onRemove,
+                )
+              : null,
         ),
-        title: TextFormField(
-          key: Key(icon.toString()), // to keep the text in the right fields
-          initialValue: text,
-          onSaved: (value) => onSave(value!),
-          validator: (value) {
-            if (value == "") {
-              return "Field is required";
-            }
-            if (validator != null) {
-              return validator(value);
-            }
-            return null;
-          },
-          enabled: inEditMode,
-          style: Theme.of(context).textTheme.headline5,
-          decoration: const InputDecoration(disabledBorder: InputBorder.none),
-        ),
-        trailing: inEditMode
-            ? IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: onRemove,
-              )
-            : null,
       ),
     );
   }
