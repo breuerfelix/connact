@@ -13,6 +13,9 @@ class ProfilePage extends StatelessWidget {
 
   ProfilePage({super.key});
 
+  // TODO: somehow prevent navigation away from this page in edit mode
+  // - maybe RouteObserver
+
   @override
   Widget build(BuildContext context) {
     final userService = Provider.of<UsersService>(context, listen: false);
