@@ -120,6 +120,10 @@ class ProfilePage extends StatelessWidget {
                     onSave: (value) {
                       user.dynamicProperties[prop.key] = value;
                     },
+                    onRemove: () {
+                      user.dynamicProperties.remove(prop.key);
+                      changeListener.notifyListeners();
+                    },
                     validator: Options.map[prop.key]!.validator,
                   )),
               !inEditMode
@@ -148,6 +152,7 @@ class ProfilePage extends StatelessWidget {
     required IconData icon,
     required String text,
     required void Function(String) onSave,
+    required void Function() onRemove,
     String? Function(String?)? validator,
   }) {
     return Card(
@@ -162,6 +167,7 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
         title: TextFormField(
+          key: Key(icon.toString()), // to keep the text in the right fields
           initialValue: text,
           onSaved: (value) => onSave(value!),
           validator: (value) {
@@ -177,6 +183,12 @@ class ProfilePage extends StatelessWidget {
           style: Theme.of(context).textTheme.headline5,
           decoration: const InputDecoration(disabledBorder: InputBorder.none),
         ),
+        trailing: inEditMode
+            ? IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: onRemove,
+              )
+            : null,
       ),
     );
   }
@@ -191,6 +203,10 @@ class SelfReplacingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (actions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Builder(builder: (context) {
       return ValueListenableBuilder(
           valueListenable: _drawerOpen,
