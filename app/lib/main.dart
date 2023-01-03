@@ -139,6 +139,8 @@ class MyApp extends StatelessWidget {
 }
 
 Widget _bottomButton(BuildContext context, String page, IconData icon) {
+  final pageActive = GoRouter.of(context).location == page;
+  final color = pageActive ? Theme.of(context).primaryColor : Colors.black;
   return Tooltip(
     message: page,
     child: SizedBox.fromSize(
@@ -149,10 +151,15 @@ Widget _bottomButton(BuildContext context, String page, IconData icon) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FaIcon(icon), // <-- Icon
+            FaIcon(
+              icon,
+              size: pageActive ? 35 : 25,
+              color: color,
+            ), // <-- Icon
             Text(
               page.split('/').last.capitalize(),
-              style: Theme.of(context).textTheme.caption,
+              style:
+                  Theme.of(context).textTheme.caption!.copyWith(color: color),
             ), // <-- Text
           ],
         ),
