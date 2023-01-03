@@ -14,7 +14,7 @@ import 'auth.dart';
 
 class User {
   late final String username;
-  late final String fullname;
+  String? fullname;
   Map<String, String> dynamicProperties = {};
 
   User(
