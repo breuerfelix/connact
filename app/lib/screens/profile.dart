@@ -1,135 +1,161 @@
-import 'dart:async';
-
 import 'package:app/services/users.dart';
 import 'package:app/util/options.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
-import 'contact_card.dart';
-
-// TODO: make fullname editable
-// TODO: start in edit mode if name is empty (probably first time opening profile)
-// TODO: edit as FAB?
 // TODO: open link on tab
 // TODO: add option to remove dynamicProperties
 
 class ProfilePage extends StatelessWidget {
   static String route = "/profile";
+
+  final _formKey = GlobalKey<FormState>();
   final ValueNotifier<bool> editing = ValueNotifier(false);
-  final StreamController<User> controller = StreamController.broadcast();
 
   ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var userService = Provider.of<UsersService>(context);
-    userService.currentUser.then(
-      (user) => controller.add(user),
-      onError: (error) => controller.addError(error),
-    );
+    final userService = Provider.of<UsersService>(context, listen: false);
 
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          StreamBuilder(
-              stream: controller.stream,
-              builder: (context, snapshot) {
-                return IconButton(
-                  onPressed: () async {
-                    editing.value = !editing.value;
-                    if (!editing.value && snapshot.hasData) {
-                      // TODO: add waiting state indication somewhere
-                      // TODO: add error handling
-                      // FIXME: need to create user on initial load instead of update
-                      await userService.update(snapshot.data!);
-                    }
-                  },
-                  icon: ValueListenableBuilder(
-                      valueListenable: editing,
-                      builder: (context, editing, child) {
-                        return FaIcon(
-                          editing
-                              ? FontAwesomeIcons.floppyDisk
-                              : FontAwesomeIcons.penToSquare,
-                        );
-                      }),
-                );
-              })
-        ],
-        title: const Text("Profile"),
-      ),
-      body: StreamBuilder(
-        stream: controller.stream,
+    return FutureBuilder(
+        future: userService.currentUser,
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Error: ${snapshot.error}")),
-              );
-            });
-          }
-
-          if (!snapshot.hasData) {
+          if (!snapshot.hasData ||
+              snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return _buildUserProfile(context, snapshot.data!);
-        },
-      ),
-    );
+          var user = snapshot.data!;
+          if (user.fullname == "") {
+            editing.value = true;
+          }
+
+          return ValueListenableBuilder(
+              valueListenable: editing,
+              builder: (context, inEditMode, _) {
+                return Scaffold(
+                    appBar: AppBar(
+                      actions: [
+                        IconButton(
+                            onPressed: () async {
+                              if (inEditMode) {
+                                // TODO: add waiting state indication somewhere
+                                // TODO: add error handling
+                                if (!_formKey.currentState!.validate()) {
+                                  return;
+                                }
+
+                                _formKey.currentState!.save();
+                                await userService.update(snapshot.data!);
+                              }
+                              editing.value = !editing.value;
+                            },
+                            icon: FaIcon(
+                              inEditMode
+                                  ? FontAwesomeIcons.floppyDisk
+                                  : FontAwesomeIcons.penToSquare,
+                            ))
+                      ],
+                      title: const Text("Profile"),
+                    ),
+                    body: _buildUserProfile(context, user, inEditMode));
+              });
+        });
   }
 
-  Widget _buildUserProfile(BuildContext context, User user) {
+  Widget _buildUserProfile(BuildContext context, User user, bool inEditMode) {
     return Center(
-        child: ValueListenableBuilder(
-            valueListenable: editing,
-            builder: (context, editing, child) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text("Welcome back @${user.username}!",
-                      style: Theme.of(context).textTheme.headline4),
-                  CircleAvatar(
-                    maxRadius: 100,
-                    backgroundColor: Colors.transparent,
-                    backgroundImage: NetworkImage(
-                        "https://avatars.dicebear.com/api/personas/${user.username}.png"),
-                  ),
-                  Text(
-                    user.fullname,
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
+        child: Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("Welcome back @${user.username}!",
+              style: Theme.of(context).textTheme.headline4),
+          CircleAvatar(
+            maxRadius: 100,
+            backgroundColor: Colors.transparent,
+            backgroundImage: NetworkImage(
+                "https://avatars.dicebear.com/api/personas/${user.username}.png"),
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: TextFormField(
+              initialValue: user.fullname,
+              onSaved: (value) => user.fullname = value!,
+              validator: (value) =>
+                  value != "" ? null : "Full Name is required",
+              enabled: inEditMode,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline4!
+                  .copyWith(color: Colors.black),
+              textAlign: TextAlign.center,
+              decoration: const InputDecoration(
+                  hintText: "<Your full name>",
+                  disabledBorder: InputBorder.none),
+            ),
+          ),
+          ...user.dynamicProperties.entries.map((prop) => _buildInfoCard(
+                context,
+                inEditMode,
+                icon: Options.map[prop.key]!.icon,
+                text: prop.value,
+                onSave: (value) {
+                  user.dynamicProperties[prop.key] = value;
+                },
+                validator: Options.map[prop.key]!.validator,
+              )),
+          !inEditMode
+              ? const SizedBox.shrink()
+              : SelfReplacingButton(
+                  icon: const Icon(Icons.add),
+                  actions: Options.map.keys
+                      .where((element) =>
+                          !user.dynamicProperties.containsKey(element))
+                      .map((e) => Action(
+                          onPressed: () {
+                            user.dynamicProperties[e] = "";
+                          },
+                          icon: Options.map[e]!.icon))
+                      .toList(),
+                )
+        ],
+      ),
+    ));
+  }
 
-                  ...user.dynamicProperties.entries.map((prop) => ContactCard(
-                        icon: Options.map[prop.key]!.icon,
-                        identity: Options.map[prop.key]!
-                            .identityFormatter(prop.value),
-                        onChange: (value) {
-                          user.dynamicProperties[prop.key] = value;
-                        },
-                        editState: editing,
-                      )),
-
-                  // TODO: there's probably something better than this
-                  !editing
-                      ? Container()
-                      : SelfReplacingButton(
-                          icon: const Icon(Icons.add),
-                          actions: Options.map.keys
-                              .where((element) =>
-                                  !user.dynamicProperties.containsKey(element))
-                              .map((e) => Action(
-                                  onPressed: () {
-                                    user.dynamicProperties[e] = "";
-                                    controller.add(user);
-                                  },
-                                  icon: Options.map[e]!.icon))
-                              .toList(),
-                        )
-                ],
-              );
-            }));
+  Widget _buildInfoCard(
+    BuildContext context,
+    bool inEditMode, {
+    required IconData icon,
+    required String text,
+    required void Function(String) onSave,
+    String? Function(String?)? validator,
+  }) {
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
+          maxRadius: 40,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Theme.of(context).iconTheme.color,
+          child: FaIcon(
+            icon,
+            size: 35,
+          ),
+        ),
+        title: TextFormField(
+          initialValue: text,
+          onSaved: (value) => onSave(value!),
+          validator: validator,
+          enabled: inEditMode,
+          style: Theme.of(context).textTheme.headline5,
+          decoration: const InputDecoration(disabledBorder: InputBorder.none),
+        ),
+      ),
+    );
   }
 }
 
@@ -156,6 +182,7 @@ class SelfReplacingButton extends StatelessWidget {
                   iconSize: 30,
                   onPressed: () => _drawerOpen.value = true,
                   icon: icon,
+                  color: Colors.white,
                 ),
               );
             }
