@@ -112,7 +112,7 @@ class ProfilePage extends StatelessWidget {
                       disabledBorder: InputBorder.none),
                 ),
               ),
-              ...user.dynamicProperties.entries.map((prop) => _buildInfoCard(
+              ...orderedProperties(user).map((prop) => _buildInfoCard(
                     context,
                     inEditMode,
                     icon: Options.map[prop.key]!.icon,
@@ -144,6 +144,11 @@ class ProfilePage extends StatelessWidget {
             ],
           );
         });
+  }
+
+  List<MapEntry> orderedProperties(User user) {
+    return user.dynamicProperties.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
   }
 
   Widget _buildInfoCard(
