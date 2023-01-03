@@ -33,7 +33,13 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    return {"username": username, "fullname": fullname, ...dynamicProperties};
+    return {
+      "username": username,
+      "fullname": fullname,
+      ...Options.map.map((key, value) => MapEntry(
+          key, null)), // set all properties to null to remove them if not set
+      ...dynamicProperties
+    };
   }
 }
 
