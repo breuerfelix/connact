@@ -84,20 +84,8 @@ class SearchPage extends StatelessWidget {
 
                 if (!loading && snapshot.data!.isEmpty) {
                   return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.network(
-                            "https://media.tenor.com/lx2WSGRk8bcAAAAC/pulp-fiction-john-travolta.gif"),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          "Where is everyone?",
-                          style: Theme.of(context).textTheme.headline5,
-                        )
-                      ],
-                    ),
+                    child: Image.network(
+                        "https://media.tenor.com/lx2WSGRk8bcAAAAC/pulp-fiction-john-travolta.gif"),
                   );
                 }
 
