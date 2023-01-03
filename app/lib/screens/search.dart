@@ -133,7 +133,7 @@ class SearchPage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.grey[200],
               backgroundImage: NetworkImage(
                   "https://avatars.dicebear.com/api/personas/$username.png"),
             ),
@@ -178,5 +178,6 @@ final TEST_VALUES = [
   "löijafe",
   "löjiawd",
   "vgaw",
-  "ahfuawh"
+  "ahfuawh",
+  "brumhard"
 ];

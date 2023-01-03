@@ -64,6 +64,7 @@ class UsersService extends ChangeNotifier {
     required this.authService,
   });
 
+  // TODO: clear current user on logout
   Future<User> get currentUser async {
     if (_currentUser != null) {
       return _currentUser!;
@@ -77,6 +78,19 @@ class UsersService extends ChangeNotifier {
     }
 
     Map<String, dynamic> userJson = jsonDecode(response.body);
+    return User.fromJson(userJson);
+  }
+
+  Future<User> get(String username) async {
+    http.Response response =
+        await _sendRequest('GET', "$baseUrl/user/$username");
+
+    if (response.statusCode != 200) {
+      throw Exception(response.body);
+    }
+
+    Map<String, dynamic> userJson = jsonDecode(response.body);
+
     return User.fromJson(userJson);
   }
 
