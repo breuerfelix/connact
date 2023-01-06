@@ -90,12 +90,12 @@ class SearchPage extends StatelessWidget {
                 final searchResults = snapshot.data?[0] as List<String>?;
                 final currentUser = snapshot.data?[1] as User?;
 
-                if (!loading && searchResults!.isEmpty) {
-                  return Center(
-                    child: Image.network(
-                        "https://media.tenor.com/lx2WSGRk8bcAAAAC/pulp-fiction-john-travolta.gif"),
-                  );
-                }
+                // if (!loading && searchResults!.isEmpty) {
+                //   return Center(
+                //     child: Image.network(
+                //         "https://media.tenor.com/lx2WSGRk8bcAAAAC/pulp-fiction-john-travolta.gif"),
+                //   );
+                // }
 
                 return Column(
                   children: [
@@ -109,13 +109,21 @@ class SearchPage extends StatelessWidget {
                         const SizedBox(
                             height: 5,
                           ),
+                    if (currentUser != null) ...[
+                      const Text("Hit or miss:"),
+                      _userCard(context, currentUser, value.text,
+                          icon: const FaIcon(FontAwesomeIcons.question)),
+                    ],
+                    if ((searchResults ?? []).isNotEmpty) ...[
+                      const Divider(),
+                      const Text("Search results:"),
+                    ],
                     Expanded(
-                      child: ListView(
-                          children: (searchResults ?? [])
-                              .map((username) =>
-                                  _userCard(context, currentUser!, username))
-                              .toList()),
-                    )
+                        child: ListView(
+                            children: (searchResults ?? [])
+                                .map((username) =>
+                                    _userCard(context, currentUser!, username))
+                                .toList()))
                   ],
                 );
               });
@@ -124,9 +132,12 @@ class SearchPage extends StatelessWidget {
     );
   }
 
-  Widget _userCard(BuildContext context, User currentUser, String username) {
-    final isAdded = ValueNotifier(
-        currentUser.contacts?.contains("user:$username") ?? false);
+  Widget _userCard(BuildContext context, User currentUser, String username,
+      {Widget? icon}) {
+    final isInContacts =
+        currentUser.contacts?.contains("user:$username") ?? false;
+    final isUserItself = currentUser.username == username;
+    final isAdded = ValueNotifier(isInContacts || isUserItself);
 
     return Card(
       child: Padding(
@@ -134,8 +145,11 @@ class SearchPage extends StatelessWidget {
         child: ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.grey[200],
-              backgroundImage: NetworkImage(
-                  "https://avatars.dicebear.com/api/personas/$username.png"),
+              backgroundImage: icon == null
+                  ? NetworkImage(
+                      "https://avatars.dicebear.com/api/personas/$username.png")
+                  : null,
+              child: icon,
             ),
             title: Text(
               username,
