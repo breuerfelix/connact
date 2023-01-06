@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
             create: (context) => UsersService(authService: authService))
       ],
       child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
