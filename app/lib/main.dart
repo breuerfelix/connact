@@ -1,6 +1,7 @@
 import 'package:app/screens/contacts.dart';
 import 'package:app/screens/login.dart';
 import 'package:app/screens/profile.dart';
+import 'package:app/screens/profile_view.dart';
 import 'package:app/screens/register.dart';
 import 'package:app/screens/search.dart';
 import 'package:app/screens/settings.dart';
@@ -67,9 +68,8 @@ class MyApp extends StatelessWidget {
                   path: RegisterPage.route,
                   pageBuilder: (context, state) =>
                       NoTransitionPage(child: RegisterPage())),
-              ShellRoute(
-                builder: _pageScaffoldBuilder,
-                routes: {
+              ShellRoute(builder: _pageScaffoldBuilder, routes: [
+                ...{
                   ContactsPage.route: const ContactsPage(),
                   ProfilePage.route: ProfilePage(),
                   SharePage.route: const SharePage(),
@@ -83,7 +83,12 @@ class MyApp extends StatelessWidget {
                               NoTransitionPage(child: p.value),
                         ))
                     .toList(),
-              )
+                GoRoute(
+                  path: ProfileViewPage.route,
+                  builder: (context, state) =>
+                      ProfileViewPage(username: state.params["username"]!),
+                ),
+              ])
             ]),
       ),
     );

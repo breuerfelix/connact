@@ -67,9 +67,8 @@ class ContactsPage extends StatelessWidget {
             style: Theme.of(context).textTheme.headline5,
           ),
           trailing: IconButton(
-            onPressed: pending
-                ? null
-                : () => print("navigating to /profiles/$username"),
+            onPressed:
+                pending ? null : () => context.push("/profiles/$username"),
             icon: Tooltip(
               message: pending ? "pending invite" : "see profile",
               child: FaIcon(pending
