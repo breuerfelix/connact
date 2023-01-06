@@ -193,5 +193,4 @@ final TEST_VALUES = [
   "löjiawd",
   "vgaw",
   "ahfuawh",
-  "brumhard"
 ];
