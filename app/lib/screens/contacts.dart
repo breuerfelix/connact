@@ -38,13 +38,24 @@ class ContactsPage extends StatelessWidget {
           }
 
           return ListView(
-            children: contacts.entries
+            children: sortedUserEntries(contacts)
                 .map((entry) => _userCard(context, entry.key, entry.value))
                 .toList(),
           );
         },
       )),
     );
+  }
+
+  // sortedUserEntries puts users first in the list that are not pending
+  // (not null when fetching).
+  List<MapEntry<String, User?>> sortedUserEntries(Map<String, User?> contacts) {
+    return contacts.entries.toList()
+      ..sort((a, b) {
+        if (a.value == null) return 1;
+        if (b.value == null) return -1;
+        return 0;
+      });
   }
 
   Widget _userCard(BuildContext context, String username, User? user) {
