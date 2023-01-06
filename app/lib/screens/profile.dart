@@ -63,16 +63,9 @@ class ProfilePage extends StatelessWidget {
                   body: Center(
                     child: Form(
                       key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("Welcome back @${user.username}!",
-                              style: Theme.of(context).textTheme.headline4),
-                          UserProfile(
-                            user: user,
-                            inEditMode: inEditMode,
-                          ),
-                        ],
+                      child: UserProfile(
+                        user: user,
+                        inEditMode: inEditMode,
                       ),
                     ),
                   ),
