@@ -57,14 +57,20 @@ class UsersService extends ChangeNotifier {
   // TODO: decouple by just taking the authToken in the constructor
   final AuthService authService;
   User? _currentUser;
-  String? _token;
 
   UsersService({
     this.baseUrl = "https://users.connact.fbr.ai",
     required this.authService,
-  });
+  }) {
+    // clear current user on logout
+    authService.addListener(() async {
+      final loggedIn = await authService.loggedIn;
+      if (!loggedIn) {
+        _currentUser = null;
+      }
+    });
+  }
 
-  // TODO: clear current user on logout
   Future<User> get currentUser async {
     if (_currentUser != null) {
       return _currentUser!;
@@ -131,14 +137,12 @@ class UsersService extends ChangeNotifier {
       req.body = jsonEncode(body);
     }
 
-    if (_token == null) {
-      _token = await authService.token;
-      if (_token == null) {
-        throw Exception("not logged in yet");
-      }
+    final token = await authService.token;
+    if (token == null) {
+      throw Exception("not logged in yet");
     }
 
-    req.headers["Authorization"] = "Bearer $_token";
+    req.headers["Authorization"] = "Bearer $token";
     return http.Response.fromStream(await req.send());
   }
 }
