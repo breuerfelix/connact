@@ -106,14 +106,10 @@ Widget _buildInfoCard(
       onTap: inEditMode ? null : () => launchUrl(Uri.parse(url)),
       mouseCursor: MouseCursor.defer,
       child: ListTile(
-        leading: CircleAvatar(
-          maxRadius: 40,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Theme.of(context).iconTheme.color,
-          child: FaIcon(
-            icon,
-            size: 35,
-          ),
+        leading: FaIcon(
+          icon,
+          size: 35,
+          color: Colors.black,
         ),
         title: TextFormField(
           key: Key(icon.toString()), // to keep the text in the right fields

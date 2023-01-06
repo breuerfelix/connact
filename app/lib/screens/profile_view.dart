@@ -27,7 +27,10 @@ class ProfileViewPage extends StatelessWidget {
           }
 
           var user = snapshot.data!;
-          return Scaffold(body: UserProfile(user: user));
+          return Scaffold(
+            appBar: AppBar(title: Text("$username's Profile")),
+            body: UserProfile(user: user),
+          );
         },
       ),
     );

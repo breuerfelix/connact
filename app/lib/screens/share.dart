@@ -18,16 +18,21 @@ class SharePage extends StatelessWidget {
 
           if (snapshot.hasData) {
             final username = snapshot.data!.username;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text("@$username",
-                    style: Theme.of(context).textTheme.headline3),
-                QrImage(
-                  data: "https://connact.io/add/$username",
-                  size: 0.5 * MediaQuery.of(context).size.width,
-                )
-              ],
+            return Scaffold(
+              appBar: AppBar(title: const Text("Share")),
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("@$username",
+                        style: Theme.of(context).textTheme.headline3),
+                    QrImage(
+                      data: "https://connact.io/add/$username",
+                      size: 0.6 * MediaQuery.of(context).size.width,
+                    )
+                  ],
+                ),
+              ),
             );
           }
 
