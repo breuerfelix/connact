@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
+
 import '../services/auth.dart';
 import '../services/users.dart';
 import '../util/string_validations.dart';
 
-class RegisterPage extends StatelessWidget {
-  static String route = "/register";
+class RegisterForm extends StatelessWidget {
   final _isLoading = ValueNotifier<bool>(false);
 
   final _formKey = GlobalKey<FormState>();
@@ -14,7 +14,7 @@ class RegisterPage extends StatelessWidget {
   final password = TextEditingController();
   final email = TextEditingController();
 
-  RegisterPage({super.key});
+  RegisterForm({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,32 +75,28 @@ class RegisterPage extends StatelessWidget {
           _isLoading.value = false;
         }
       },
-      child: const Text('Submit'),
+      child: const Text('Register'),
     );
 
     Widget form = Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            ...formFields,
-            Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: button),
-          ],
-        ));
-
-    return Scaffold(
-      appBar: AppBar(title: const Text("Register")),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ValueListenableBuilder(
-            valueListenable: _isLoading,
-            builder: (context, loading, _) =>
-                loading ? const CircularProgressIndicator() : form,
-          ),
-        ),
+      key: _formKey,
+      child: Column(
+        children: [
+          Expanded(
+              child: Column(
+            children: formFields,
+          )),
+          Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: button),
+        ],
       ),
+    );
+
+    return ValueListenableBuilder(
+      valueListenable: _isLoading,
+      builder: (context, loading, _) =>
+          loading ? const CircularProgressIndicator() : form,
     );
   }
 }

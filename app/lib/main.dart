@@ -2,7 +2,6 @@ import 'package:app/screens/contacts.dart';
 import 'package:app/screens/login.dart';
 import 'package:app/screens/profile.dart';
 import 'package:app/screens/profile_view.dart';
-import 'package:app/screens/register.dart';
 import 'package:app/screens/search.dart';
 import 'package:app/screens/settings.dart';
 import 'package:app/screens/share.dart';
@@ -43,8 +42,7 @@ class MyApp extends StatelessWidget {
         routerConfig: GoRouter(
             refreshListenable: authService,
             redirect: (context, state) async {
-              final onLoginPage = state.subloc == RegisterPage.route ||
-                  state.subloc == LoginPage.route;
+              final onLoginPage = state.subloc == LoginPage.route;
 
               if (!onLoginPage && !await authService.loggedIn) {
                 // would be nice to clear the navigation stack here
@@ -65,10 +63,6 @@ class MyApp extends StatelessWidget {
                 pageBuilder: (context, state) =>
                     NoTransitionPage(child: LoginPage()),
               ),
-              GoRoute(
-                  path: RegisterPage.route,
-                  pageBuilder: (context, state) =>
-                      NoTransitionPage(child: RegisterPage())),
               ShellRoute(builder: _pageScaffoldBuilder, routes: [
                 ...{
                   ContactsPage.route: const ContactsPage(),

@@ -1,102 +1,94 @@
-import 'package:app/screens/register.dart';
-import 'package:app/services/auth.dart';
+import 'package:app/screens/login_form.dart';
+import 'package:app/screens/register_form.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
-import '../util/string_validations.dart';
-
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   static String route = "/login";
-  final _isLoading = ValueNotifier<bool>(false);
 
-  final _formKey = GlobalKey<FormState>();
-  final username = TextEditingController();
-  final password = TextEditingController();
+  const LoginPage({super.key});
 
-  LoginPage({super.key});
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    _tabController = TabController(length: 2, vsync: this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<TextFormField> formFields = [
-      TextFormField(
-        autofocus: true,
-        decoration: const InputDecoration(hintText: "Username"),
-        controller: username,
-        // The validator receives the text that the user has entered.
-        validator: (value) {
-          if (!value.isValidName) {
-            return 'Username is invalid.';
-          }
-          return null;
-        },
-      ),
-      TextFormField(
-        // TODO: use two password fields and validate on that
-        decoration: const InputDecoration(hintText: "Password"),
-        controller: password,
-        obscureText: true,
-        // The validator receives the text that the user has entered.
-        validator: (value) {
-          if (!value.isValidPassword) {
-            return 'Password is invalid';
-          }
-          return null;
-        },
-        onFieldSubmitted: (_) => _submit(context),
-      ),
-    ];
-
-    Widget form = Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            ...formFields,
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: ElevatedButton(
-                onPressed: () => _submit(context),
-                child: const Text('Submit'),
-              ),
+    Widget tabs = Column(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: const [
+            Text(
+              "connact",
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.w700),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: ElevatedButton(
-                  child: const Text('Register instead'),
-                  onPressed: () => context.push(RegisterPage.route)),
-            ),
+            Text("[contact:connect]",
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.6))
           ],
-        ));
+        ),
+        const SizedBox(
+          height: 50,
+        ),
+        Container(
+          decoration: BoxDecoration(
+              color: const Color(0xFFD9D9D9),
+              borderRadius: BorderRadius.circular(25)),
+          child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: const Color(0xFF2f3e46),
+              ),
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.black,
+              indicatorPadding: const EdgeInsets.all(3),
+              splashBorderRadius: BorderRadius.circular(25),
+              tabs: const [
+                Tab(text: "Login"),
+                Tab(text: "Sign up"),
+              ]),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                LoginForm(),
+                RegisterForm(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ValueListenableBuilder(
-            valueListenable: _isLoading,
-            builder: (context, loading, _) =>
-                loading ? const CircularProgressIndicator() : form,
-          ),
+          padding: const EdgeInsets.all(30.0),
+          child: tabs,
         ),
       ),
     );
-  }
-
-  Future<void> _submit(BuildContext context) async {
-    // Validate returns true if the form is valid, or false otherwise.
-    if (_formKey.currentState!.validate()) {
-      _isLoading.value = true;
-      try {
-        await Provider.of<AuthService>(context, listen: false)
-            .login(username.text, password.text);
-      } catch (e) {
-        // TODO: sendErrorDialog util function to show this
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: $e")),
-        );
-      }
-      _isLoading.value = false;
-    }
   }
 }

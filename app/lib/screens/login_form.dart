@@ -1,0 +1,89 @@
+import 'package:app/services/auth.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../util/string_validations.dart';
+
+class LoginForm extends StatelessWidget {
+  final _isLoading = ValueNotifier<bool>(false);
+
+  final _formKey = GlobalKey<FormState>();
+  final username = TextEditingController();
+  final password = TextEditingController();
+
+  LoginForm({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    List<TextFormField> formFields = [
+      TextFormField(
+        autofocus: true,
+        decoration: const InputDecoration(hintText: "Username"),
+        controller: username,
+        // The validator receives the text that the user has entered.
+        validator: (value) {
+          if (!value.isValidName) {
+            return 'Username is invalid.';
+          }
+          return null;
+        },
+      ),
+      TextFormField(
+        // TODO: use two password fields and validate on that
+        decoration: const InputDecoration(hintText: "Password"),
+        controller: password,
+        obscureText: true,
+        // The validator receives the text that the user has entered.
+        validator: (value) {
+          if (!value.isValidPassword) {
+            return 'Password is invalid';
+          }
+          return null;
+        },
+        onFieldSubmitted: (_) => _submit(context),
+      ),
+    ];
+
+    Widget form = Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          Expanded(
+              child: Column(
+            children: formFields,
+          )),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: ElevatedButton(
+              onPressed: () => _submit(context),
+              child: const Text('Login'),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return ValueListenableBuilder(
+      valueListenable: _isLoading,
+      builder: (context, loading, _) =>
+          loading ? const CircularProgressIndicator() : form,
+    );
+  }
+
+  Future<void> _submit(BuildContext context) async {
+    // Validate returns true if the form is valid, or false otherwise.
+    if (_formKey.currentState!.validate()) {
+      _isLoading.value = true;
+      try {
+        await Provider.of<AuthService>(context, listen: false)
+            .login(username.text, password.text);
+      } catch (e) {
+        // TODO: sendErrorDialog util function to show this
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: $e")),
+        );
+      }
+      _isLoading.value = false;
+    }
+  }
+}
