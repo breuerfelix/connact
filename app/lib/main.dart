@@ -7,6 +7,7 @@ import 'package:app/screens/settings.dart';
 import 'package:app/screens/share.dart';
 import 'package:app/services/auth.dart';
 import 'package:app/services/users.dart';
+import 'package:app/ui/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -37,7 +38,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          colorScheme: ThemeData().colorScheme.copyWith(
+                primary: ColorTheme.primary,
+                secondary: ColorTheme.highlight,
+              ),
         ),
         routerConfig: GoRouter(
             refreshListenable: authService,
@@ -61,7 +65,7 @@ class MyApp extends StatelessWidget {
               GoRoute(
                 path: LoginPage.route,
                 pageBuilder: (context, state) =>
-                    NoTransitionPage(child: LoginPage()),
+                    const NoTransitionPage(child: LoginPage()),
               ),
               ShellRoute(builder: _pageScaffoldBuilder, routes: [
                 ...{
@@ -140,7 +144,9 @@ class MyApp extends StatelessWidget {
 
 Widget _bottomButton(BuildContext context, String page, IconData icon) {
   final pageActive = GoRouter.of(context).location == page;
-  final color = pageActive ? Theme.of(context).primaryColor : Colors.black;
+  final color = pageActive
+      ? Theme.of(context).colorScheme.secondary
+      : Theme.of(context).colorScheme.primary;
   return Tooltip(
     message: page,
     child: SizedBox.fromSize(

@@ -1,4 +1,5 @@
 import 'package:app/services/auth.dart';
+import 'package:app/ui/textinput.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,12 +16,12 @@ class LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<TextFormField> formFields = [
-      TextFormField(
+    List<Widget> formFields = [
+      CustomTextField(
         autofocus: true,
-        decoration: const InputDecoration(hintText: "Username"),
+        hintText: "willywonka",
+        label: "Username",
         controller: username,
-        // The validator receives the text that the user has entered.
         validator: (value) {
           if (!value.isValidName) {
             return 'Username is invalid.';
@@ -28,19 +29,18 @@ class LoginForm extends StatelessWidget {
           return null;
         },
       ),
-      TextFormField(
-        // TODO: use two password fields and validate on that
-        decoration: const InputDecoration(hintText: "Password"),
+      const SizedBox(height: 20),
+      CustomTextField(
+        hintText: "min. 8 characters",
+        label: "Password",
+        secret: true,
         controller: password,
-        obscureText: true,
-        // The validator receives the text that the user has entered.
         validator: (value) {
           if (!value.isValidPassword) {
-            return 'Password is invalid';
+            return 'Password is invalid.';
           }
           return null;
         },
-        onFieldSubmitted: (_) => _submit(context),
       ),
     ];
 
@@ -49,15 +49,13 @@ class LoginForm extends StatelessWidget {
       child: Column(
         children: [
           Expanded(
-              child: Column(
-            children: formFields,
-          )),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              onPressed: () => _submit(context),
-              child: const Text('Login'),
+            child: Column(
+              children: formFields,
             ),
+          ),
+          ElevatedButton(
+            onPressed: () => _submit(context),
+            child: const Text('Login'),
           ),
         ],
       ),

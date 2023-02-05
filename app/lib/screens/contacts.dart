@@ -65,6 +65,7 @@ class ContactsPage extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListTile(
+          // TODO: adapt colorscheme
           leading: CircleAvatar(
             backgroundColor: Colors.grey[200],
             backgroundImage: pending

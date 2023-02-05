@@ -1,3 +1,4 @@
+import 'package:app/ui/textinput.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
@@ -18,10 +19,11 @@ class RegisterForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<TextFormField> formFields = [
-      TextFormField(
+    List<Widget> formFields = [
+      CustomTextField(
+        label: "Email",
+        hintText: "name@example.com",
         autofocus: true,
-        decoration: const InputDecoration(hintText: "Email"),
         controller: email,
         // The validator receives the text that the user has entered.
         validator: (value) {
@@ -31,8 +33,10 @@ class RegisterForm extends StatelessWidget {
           return null;
         },
       ),
-      TextFormField(
-        decoration: const InputDecoration(hintText: "Username"),
+      const SizedBox(height: 20),
+      CustomTextField(
+        label: "Username",
+        hintText: "willywonka",
         controller: username,
         // The validator receives the text that the user has entered.
         validator: (value) {
@@ -42,14 +46,28 @@ class RegisterForm extends StatelessWidget {
           return null;
         },
       ),
-      TextFormField(
-        decoration: const InputDecoration(hintText: "Password"),
+      const SizedBox(height: 20),
+      CustomTextField(
+        label: "Password",
+        hintText: "min. 8 characters",
         controller: password,
-        obscureText: true,
+        secret: true,
         // The validator receives the text that the user has entered.
         validator: (value) {
           if (!value.isValidPassword) {
-            return 'Password is invalid';
+            return 'Password is invalid.';
+          }
+          return null;
+        },
+      ),
+      const SizedBox(height: 20),
+      CustomTextField(
+        hintText: "min. 8 characters",
+        label: "Confirm Password",
+        secret: true,
+        validator: (value) {
+          if (value != password.text) {
+            return 'Passwords do not match.';
           }
           return null;
         },
@@ -86,9 +104,7 @@ class RegisterForm extends StatelessWidget {
               child: Column(
             children: formFields,
           )),
-          Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: button),
+          button,
         ],
       ),
     );

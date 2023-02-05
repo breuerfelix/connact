@@ -2,6 +2,8 @@ import 'package:app/screens/login_form.dart';
 import 'package:app/screens/register_form.dart';
 import 'package:flutter/material.dart';
 
+import '../ui/colors.dart';
+
 class LoginPage extends StatefulWidget {
   static String route = "/login";
 
@@ -38,11 +40,13 @@ class _LoginPageState extends State<LoginPage>
               "connact",
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.w700),
             ),
-            Text("[contact:connect]",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.6))
+            Text(
+              "[contact:connect]",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.6),
+            )
           ],
         ),
         const SizedBox(
@@ -50,23 +54,31 @@ class _LoginPageState extends State<LoginPage>
         ),
         Container(
           decoration: BoxDecoration(
-              color: const Color(0xFFD9D9D9),
-              borderRadius: BorderRadius.circular(25)),
+            color: ColorTheme.grey,
+            borderRadius: BorderRadius.circular(25),
+          ),
           child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(25),
-                color: const Color(0xFF2f3e46),
+                color: Theme.of(context).colorScheme.primary,
               ),
               labelColor: Colors.white,
               unselectedLabelColor: Colors.black,
               indicatorPadding: const EdgeInsets.all(3),
               splashBorderRadius: BorderRadius.circular(25),
               tabs: const [
-                Tab(text: "Login"),
-                Tab(text: "Sign up"),
+                Tab(
+                  child: Text("Login",
+                      style: TextStyle(fontWeight: FontWeight.w700)),
+                ),
+                Tab(
+                  child: Text("Sign up",
+                      style: TextStyle(fontWeight: FontWeight.w700)),
+                ),
               ]),
         ),
+        const SizedBox(height: 30),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
