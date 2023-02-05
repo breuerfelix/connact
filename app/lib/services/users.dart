@@ -59,7 +59,7 @@ class UsersService extends ChangeNotifier {
   User? _currentUser;
 
   UsersService({
-    this.baseUrl = "https://users.connact.fbr.ai",
+    this.baseUrl = "https://users.connact.tecios.de",
     required this.authService,
   }) {
     // clear current user on logout

@@ -26,7 +26,7 @@ class AuthService extends ChangeNotifier {
     return await _storage.read(key: tokenKey);
   }
 
-  AuthService({this.baseUrl = "https://auth.connact.fbr.ai"});
+  AuthService({this.baseUrl = "https://auth.connact.tecios.de"});
 
   Future<void> login(String username, String password) async {
     http.Response response = await http.post(Uri.parse("$baseUrl/login"),
