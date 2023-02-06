@@ -42,6 +42,8 @@ class MyApp extends StatelessWidget {
                 primary: ColorTheme.primary,
                 secondary: ColorTheme.highlight,
               ),
+          // seems like we need to statically set that now: https://github.com/material-foundation/flutter-packages/issues/35
+          fontFamily: "Montserrat",
         ),
         routerConfig: GoRouter(
             refreshListenable: authService,
