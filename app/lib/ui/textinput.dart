@@ -39,6 +39,7 @@ class CustomTextField extends StatelessWidget {
               return TextFormField(
                 obscureText: obscureText,
                 autofocus: autofocus,
+                cursorColor: Theme.of(context).colorScheme.secondary,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25)),

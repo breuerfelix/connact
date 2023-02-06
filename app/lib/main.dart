@@ -161,7 +161,7 @@ Widget _bottomButton(BuildContext context, String page, IconData icon) {
           children: [
             FaIcon(
               icon,
-              size: pageActive ? 35 : 25,
+              size: 25,
               color: color,
             ), // <-- Icon
             Text(

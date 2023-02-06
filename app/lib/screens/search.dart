@@ -18,7 +18,7 @@ class SearchPage extends StatelessWidget {
           padding: const EdgeInsets.only(left: 10, right: 10),
           child: TextField(
             controller: _controller,
-            cursorColor: Colors.white,
+            cursorColor: Theme.of(context).colorScheme.secondary,
             maxLines: 1,
             decoration: InputDecoration(
                 contentPadding: const EdgeInsets.all(10),
@@ -30,8 +30,6 @@ class SearchPage extends StatelessWidget {
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.secondary,
                 hintText: 'Search...',
                 hintStyle: const TextStyle(color: Colors.white),
                 suffixIcon: ValueListenableBuilder(
