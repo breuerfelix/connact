@@ -1,4 +1,5 @@
 import 'package:app/services/auth.dart';
+import 'package:app/ui/gradient_button.dart';
 import 'package:app/ui/textinput.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -53,9 +54,12 @@ class LoginForm extends StatelessWidget {
               children: formFields,
             ),
           ),
-          ElevatedButton(
+          GradientButton(
             onPressed: () => _submit(context),
-            child: const Text('Login'),
+            child: const Text(
+              'Login',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+            ),
           ),
         ],
       ),

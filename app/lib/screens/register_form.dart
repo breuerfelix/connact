@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../services/auth.dart';
 import '../services/users.dart';
+import '../ui/gradient_button.dart';
 import '../util/string_validations.dart';
 
 class RegisterForm extends StatelessWidget {
@@ -74,37 +75,22 @@ class RegisterForm extends StatelessWidget {
       ),
     ];
 
-    Widget button = ElevatedButton(
-      onPressed: () async {
-        // Validate returns true if the form is valid, or false otherwise.
-        if (_formKey.currentState!.validate()) {
-          _isLoading.value = true;
-          try {
-            final authService =
-                Provider.of<AuthService>(context, listen: false);
-            await authService.signUp(username.text, password.text, email.text);
-            final usersService = UsersService(authService: authService);
-            await usersService.create(userFromJWT((await authService.token)!));
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Error: $e")),
-            );
-          }
-          _isLoading.value = false;
-        }
-      },
-      child: const Text('Register'),
-    );
-
     Widget form = Form(
       key: _formKey,
       child: Column(
         children: [
           Expanded(
-              child: Column(
-            children: formFields,
-          )),
-          button,
+            child: Column(
+              children: formFields,
+            ),
+          ),
+          GradientButton(
+            onPressed: () => _submit(context),
+            child: const Text(
+              'Register',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+            ),
+          ),
         ],
       ),
     );
@@ -114,6 +100,23 @@ class RegisterForm extends StatelessWidget {
       builder: (context, loading, _) =>
           loading ? const CircularProgressIndicator() : form,
     );
+  }
+
+  Future<void> _submit(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      _isLoading.value = true;
+      try {
+        final authService = Provider.of<AuthService>(context, listen: false);
+        await authService.signUp(username.text, password.text, email.text);
+        final usersService = UsersService(authService: authService);
+        await usersService.create(userFromJWT((await authService.token)!));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: $e")),
+        );
+      }
+      _isLoading.value = false;
+    }
   }
 }
 
