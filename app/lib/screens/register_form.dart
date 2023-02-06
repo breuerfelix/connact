@@ -98,7 +98,7 @@ class RegisterForm extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: _isLoading,
       builder: (context, loading, _) =>
-          loading ? const CircularProgressIndicator() : form,
+          loading ? const Center(child: CircularProgressIndicator()) : form,
     );
   }
 

@@ -57,12 +57,12 @@ class MyApp extends StatelessWidget {
               }
 
               if (onLoginPage && await authService.loggedIn) {
-                return ProfilePage.route;
+                return SharePage.route;
               }
 
               return null;
             },
-            initialLocation: ProfilePage.route,
+            initialLocation: SharePage.route,
             routes: [
               GoRoute(
                 path: LoginPage.route,
