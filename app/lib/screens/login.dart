@@ -97,7 +97,8 @@ class _LoginPageState extends State<LoginPage>
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(30.0),
+          padding:
+              const EdgeInsets.only(left: 30, right: 30, top: 30, bottom: 80),
           child: tabs,
         ),
       ),
