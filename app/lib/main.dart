@@ -47,6 +47,8 @@ class MyApp extends StatelessWidget {
         ),
         routerConfig: GoRouter(
             refreshListenable: authService,
+            // TODO: check if design fits the suggested at https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/redirection.dart
+            // TODO: and also this https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/books/src/auth.dart
             redirect: (context, state) async {
               final onLoginPage = state.subloc == LoginPage.route;
 

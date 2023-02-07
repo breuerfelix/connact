@@ -21,7 +21,7 @@ class SelfReplacingButton extends StatelessWidget {
               return Ink(
                 decoration: ShapeDecoration(
                   shape: const CircleBorder(),
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 child: IconButton(
                   iconSize: 30,
