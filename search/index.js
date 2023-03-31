@@ -49,9 +49,25 @@ app.get('/search', async (req, res) => {
 		return
 	}
 
-	// TODO implement the search
+	const cursor = users.aggregate([{
+		$search: {
+			// i configured a 'username' index in the ui
+			index: "username",
+			text: {
+				query: username,
+				path: "username",
+				fuzzy: {},
+			},
+		},
+	}])
 
-	res.send(JSON.stringify({ users: [username] }))
+	const matches = []
+	for await (const match of cursor) {
+		matches.push(match)
+	}
+	const filtered = matches.map(({ username, email, displayname }) => ({ username, email, displayname }))
+
+	res.send(JSON.stringify({ matches: filtered }))
 })
 
 client.connect(err => {
