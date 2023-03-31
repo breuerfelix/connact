@@ -1,13 +1,14 @@
-FROM denoland/deno:alpine-1.10.3
+FROM denoland/deno:alpine-1.32.1
 
 EXPOSE 80
 WORKDIR /app
+
+COPY . .
+RUN chown -R deno:deno /app
+
 USER deno
 
-COPY deps.ts .
 RUN deno cache deps.ts
-
-ADD . .
 RUN deno cache main.ts
 
 CMD ["run", "--allow-read", "--allow-net", "--allow-env", "main.ts"]
