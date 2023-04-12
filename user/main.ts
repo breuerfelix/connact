@@ -146,6 +146,4 @@ app.addEventListener("listen", () => {
   console.log(`Listening on: localhost:${port}`);
 });
 
-console.log("test")
 await app.listen({ port });
-console.log("testa")
