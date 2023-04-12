@@ -41,18 +41,17 @@ async function findUser(db: Surreal, username: string) {
     { id: "user:" + username },
   );
 
-  return found[0].result;
+  const users = found[0].result;
+  if (!users || users.length < 1) return null;
+  return users[0];
 }
 
 router.get(`${routePrefix}/:username?`, async (ctx) => {
   const { username } = ctx.state.token;
   const targetUser = ctx.params.username || username;
 
-  const users = await findUser(db, targetUser);
-  if (users.length < 1) {
-    return res(ctx, 400, "user not found");
-  }
-  const user = users[0];
+  const user = await findUser(db, targetUser);
+  if (!user) return res(ctx, 400, "user not found");
 
   // you want your own data
   if (username == targetUser) {
@@ -76,7 +75,7 @@ router.post(routePrefix, async (ctx) => {
   const data = await ctx.request.body({ type: "json" }).value;
   const { username } = ctx.state.token;
 
-  if ((await findUser(db, username)).length > 0) {
+  if (await findUser(db, username)) {
     return res(ctx, 400, "username already exists");
   }
 
@@ -94,12 +93,9 @@ router.put(routePrefix, async (ctx) => {
   const data = await ctx.request.body({ type: "json" }).value;
   const { username } = ctx.state.token;
 
-  const users = await findUser(db, username);
-  if (users.length < 1) {
-    return res(ctx, 400, "user not found");
-  }
+  const user = await findUser(db, username);
+  if (!user) return res(ctx, 400, "user not found");
 
-  const user = users[0];
   // username cannot be changed
   // TODO only set desired data
   const updated = await db.change(user.id, { ...data, username });
@@ -116,6 +112,7 @@ app.use(async (ctx, next) => {
   try {
     await next();
   } catch (e) {
+    console.error(e);
     res(ctx, 500, e.toString());
   }
 });

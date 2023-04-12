@@ -8,7 +8,7 @@ jobs:
   images:
     strategy:
       matrix:
-        image: [auth, users, radicale, sync, search]
+        image: [auth, user, radicale, sync, search]
     runs-on: ubuntu-latest
     steps:
       -
