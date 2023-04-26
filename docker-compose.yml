@@ -1,0 +1,94 @@
+version: '3'
+services:
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: connact
+    ports:
+      - 27017:27017
+
+  surreal:
+    image: surrealdb/surrealdb
+    command: 
+    - start
+    - --user
+    - root
+    - --pass
+    - connact
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+
+  auth:
+    build: ./auth
+    image: ghcr.io/breuerfelix/connact/auth:latest
+    restart: unless-stopped
+    ports:
+      - 4000:80
+    volumes:
+      - ./auth:/usr/app
+    environment:
+      - MONGO_URL=mongodb://root:connact@mongo:27017/?retryWrites=true&w=majority
+      - PORT=80
+      - JWT_SECRET=developing
+    depends_on:
+      - mongo
+
+  relation:
+    build: ./relation
+    image: ghcr.io/breuerfelix/connact/relation:latest
+    restart: unless-stopped
+    ports:
+      - 4001:80
+    volumes:
+      - ./relation:/usr/app
+    environment:
+      - DB_URL=http://surreal:8000/rpc
+      - DB_USER=root
+      - DB_PASS=connact
+      - DB_NAMESPACE=developing
+      - DB_DATABASE=developing
+      - PORT=80
+      - JWT_SECRET=developing
+    depends_on:
+      - surreal
+
+  user:
+    build: ./user
+    image: ghcr.io/breuerfelix/connact/user:latest
+    restart: unless-stopped
+    ports:
+      - 4002:80
+    volumes:
+      - ./user:/usr/app
+    environment:
+      - DB_URL=http://surreal:8000/rpc
+      - DB_USER=root
+      - DB_PASS=connact
+      - DB_NAMESPACE=developing
+      - DB_DATABASE=developing
+      - PORT=80
+      - JWT_SECRET=developing
+    depends_on:
+      - surreal
+
+  search:
+    build: ./search
+    image: ghcr.io/breuerfelix/connact/search:latest
+    restart: unless-stopped
+    ports:
+      - 4003:80
+    volumes:
+      - ./search:/usr/app
+    environment:
+      - DB_URL=http://surreal:8000/rpc
+      - DB_USER=root
+      - DB_PASS=connact
+      - DB_NAMESPACE=developing
+      - DB_DATABASE=developing
+      - PORT=80
+      - JWT_SECRET=developing
+    depends_on:
+      - surreal
