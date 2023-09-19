@@ -23,6 +23,9 @@ const pb = new kx.PodBuilder({
         ports,
         volumeMounts: [getMount(pvc, "/data")],
     }],
+    nodeSelector: {
+        cloud: "contabo"
+    },
     volumes: [getVolume(pvc)],
 })
 
