@@ -17,6 +17,8 @@ class User {
   String? fullname;
   Map<String, String> dynamicProperties = {};
   Set<String>? contacts;
+  Set<String>? pending;
+  Set<String>? requested;
 
   User({
     required this.username,
@@ -53,13 +55,14 @@ class User {
 // TODO: persist stuff to shared prefs to safe networking actions
 
 class UsersService extends ChangeNotifier {
-  final String baseUrl;
-  // TODO: decouple by just taking the authToken in the constructor
+  final String usersBaseUrl;
+  final String relationBaseUrl;
   final AuthService authService;
   User? _currentUser;
 
   UsersService({
-    this.baseUrl = "https://users.connact.tecios.de",
+    this.usersBaseUrl = "https://users.connact.tecios.de",
+    this.relationBaseUrl = "https://relations.connact.tecios.de",
     required this.authService,
   }) {
     // clear current user on logout
@@ -76,7 +79,7 @@ class UsersService extends ChangeNotifier {
       return _currentUser!;
     }
 
-    http.Response response = await _sendRequest('GET', "$baseUrl/user");
+    http.Response response = await _sendRequest('GET', "$usersBaseUrl/user");
     // TODO: need other status code here
     if (response.statusCode == 400) {
       // catch user not found
@@ -89,7 +92,7 @@ class UsersService extends ChangeNotifier {
 
   Future<User> get(String username) async {
     http.Response response =
-        await _sendRequest('GET', "$baseUrl/user/$username");
+        await _sendRequest('GET', "$usersBaseUrl/user/$username");
 
     if (response.statusCode != 200) {
       throw Exception(response.body);
@@ -102,7 +105,7 @@ class UsersService extends ChangeNotifier {
 
   Future<void> create(User user) async {
     http.Response response =
-        await _sendRequest('POST', "$baseUrl/user", body: user.toJson());
+        await _sendRequest('POST', "$usersBaseUrl/user", body: user.toJson());
 
     if (response.statusCode != 200) {
       throw Exception(response.body);
@@ -117,7 +120,22 @@ class UsersService extends ChangeNotifier {
 
   Future<void> update(User user) async {
     http.Response response =
-        await _sendRequest('PUT', "$baseUrl/user", body: user.toJson());
+        await _sendRequest('PUT', "$usersBaseUrl/user", body: user.toJson());
+
+    if (response.statusCode != 200) {
+      throw Exception(response.body);
+    }
+
+    Map<String, dynamic> userJson = jsonDecode(response.body);
+
+    _currentUser = User.fromJson(userJson);
+
+    notifyListeners();
+  }
+
+  Future<void> add(String user) async {
+    http.Response response =
+        await _sendRequest('POST', "$relationBaseUrl/relation/$user");
 
     if (response.statusCode != 200) {
       throw Exception(response.body);

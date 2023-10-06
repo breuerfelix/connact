@@ -76,7 +76,7 @@ class ContactsPage extends StatelessWidget {
           ),
           title: Text(
             pending ? username : user.fullname!,
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           trailing: IconButton(
             onPressed:
@@ -100,16 +100,13 @@ class ContactsPage extends StatelessWidget {
     final currentUser = await usersService.currentUser;
     for (String contact in (currentUser.contacts ?? {})) {
       contact = contact.replaceFirst("user:", "");
+      users[contact] = await usersService.get(contact);
+    }
 
-      User? user;
-
-      try {
-        user = await usersService.get(contact);
-      } catch (e) {
-        print("pending user: $contact");
-      }
-
-      users[contact] = user;
+    // push null for requested users to indicate pending status
+    for (String contact in (currentUser.requested ?? {})) {
+      contact = contact.replaceFirst("user:", "");
+      users[contact] = null;
     }
 
     return users;
